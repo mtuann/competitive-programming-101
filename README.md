@@ -18,4 +18,5 @@ This Github provides a collection of training materials for the [Competitive Pro
 - [VNOI Wiki](https://wiki.vnoi.info/) - A Vietnamese online judge community with a lot of useful resources.
 - [USACO Training](http://train.usaco.org/usacogate) - A training program for the USA Computing Olympiad.
 - [USACO Guide](https://usaco.guide/) - A guide to help you prepare for USA Computing Olympiad.
+- [Tutorial - A way to Practice Competitive Programming : From Rating 1000 to 2400+ By E869120](https://codeforces.com/blog/entry/66909)
 

@@ -51,4 +51,4 @@ int main() {
     return 0;
 }
 
-# clang++ -std=c++17 -o dsu dsu.cpp
+// clang++ -std=c++17 -o dsu dsu.cpp
