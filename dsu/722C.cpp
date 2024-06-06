@@ -1,3 +1,5 @@
+// https://codeforces.com/problemset/problem/722/C
+// https://codeforces.com/contest/722/submission/264291219
 #include <iostream>
 #include <vector>
 #include <algorithm>
