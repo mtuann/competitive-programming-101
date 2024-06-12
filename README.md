@@ -12,6 +12,7 @@ This Github provides a collection of training materials for the [Competitive Pro
 
 
 ## Resources
+- [Weird cpp tricks](https://leduythuccs.github.io/2021-03-28-Weird-cpp-tricks/)
 - [Books](books/README.md)
 - [Courses](courses/README.md)
 - [Practice Websites](practice-websites/README.md)
