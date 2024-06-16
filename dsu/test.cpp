@@ -3,88 +3,74 @@
 #include <algorithm>
 #include <map>
 #include <cstring>
-#include <queue>
-
-#define int long long
 using namespace std;
-int p[100005];
-int ans[100005],n,a,b,deg[100005];
-map <int,int> mp;
-vector <int> e[100005];
-queue <int> q;
-vector <int> v;
-inline void dfs(int u)
-{
-	v.push_back(u);
-	for(auto x:e[u])
-		if(x!=v.back()&&x!=v[0]) dfs(x);
+//===========================================
+const int MAX = 1e6+5;
+int arr[MAX], res[MAX], MX, n, m;
+bool in[MAX];
+vector<int> p, mx;
+vector<vector<int>> cmp;
+
+void init(){
+    p = vector<int>(n*m+5, -1);
+    mx = vector<int>(n*m+5);
+    for (int i = 1; i <= n*m; i++) mx[i] = arr[i];
+    cmp = vector<vector<int>>(n*m+5);
+    for (int i = 1; i <= n*m; i++) cmp[i].push_back(i);
+    return;
 }
-signed main()
-{
-	ios::sync_with_stdio(false);
-	cin.tie(0);
-	cin >> n >> a >> b;
-	for(int i=1;i<=n;i++)
-	{
-		cin >> p[i];
-		mp[p[i]]=i,ans[i]=-1;
-	}
-	for(int i=1;i<=n;i++)
-	{
-		if(mp[a-p[i]]) e[i].push_back(mp[a-p[i]]);
-		if(a!=b) if(mp[b-p[i]]) e[i].push_back(mp[b-p[i]]);
-	}
-	for(int i=1;i<=n;i++)
-	{
-		deg[i]=e[i].size();
-		if(deg[i]==1) q.push(i);
-	}
-	while(!q.empty())
-	{
-		int x=q.front();
-		q.pop();
-		for(auto v:e[x])
-		{
-			if(ans[v]==-1)
-			{
-				if(ans[x]==-1)
-				{
-					if(p[x]+p[v]==a) ans[x]=ans[v]=0;
-					else ans[x]=ans[v]=1;
-				}
-				if(--deg[v]==1) q.push(v);
-			}
-		}
-	}
-	for(int i=1;i<=n;i++)
-	{
-		if(deg[i]==2)
-		{
-			v.clear(),dfs(i);
-			if(v.size()%2)
-			{
-				cout << "NO";
-				return 0;
-			}
-			for(int i=1;i<v.size();i+=2)
-			{
-				if(p[v[i]]+p[v[i-1]]==a) ans[v[i]]=ans[v[i-1]]=0;
-				else ans[v[i]]=ans[v[i-1]]=1;
-			}
-			for(auto t:v) deg[t]=0;
-		}
-	}
-	for(int i=1;i<=n;i++)
-	{
-		if(ans[i]==-1)
-		{
-			cout << "NO";
-			return 0;
-		}
-	}
-	cout << "YES\n";
-	for(int i=1;i<=n;i++)
-		cout << ans[i] << " ";
-	return 0;
+
+int findP(int x){ return (p[x] < 0? x : p[x] = findP(p[x])); }
+
+void unite(int a, int b){
+    printf("update: a = %d, b = %d\n", a, b);
+    int val = arr[a];
+    a = findP(a), b = findP(b);
+    if (a == b) return;
+    if (mx[a] < mx[b]) swap(a, b);
+    p[b] = a;
+    printf("root: a = %d, b = %d\n", a, b);
+    // print cmp[a], cmp[b]
+    for (int i = 0; i < cmp[a].size(); i++) printf("%d ", cmp[a][i]);
+    printf("\n");
+    for (int i = 0; i < cmp[b].size(); i++) printf("%d ", cmp[b][i]);
+    printf("\n");
+
+    if (mx[a] > mx[b]){
+        for (int i = 0; i < cmp[b].size(); i++) res[cmp[b][i]] = val;
+        cmp[b].clear();
+    }
+    if (cmp[a].size() < cmp[b].size()) cmp[a].swap(cmp[b]);
+    for (int i = 0; i < cmp[b].size(); i++) cmp[a].push_back(cmp[b][i]);
+    // print after merge
+    printf("after merge: a = %d, b = %d sz a: %d, sz b: %d\n", a, b, cmp[a].size(), cmp[b].size());
+    for (int i = 0; i < cmp[a].size(); i++) printf("%d ", cmp[a][i]);
+    cmp[b].clear();
+    mx[a] = max(mx[a], mx[b]);
+    return;
+}
+
+int main(){
+    cin.tie(0)->sync_with_stdio(0);
+    //freopen("test.txt", "r", stdin);
+    cin >> n >> m;
+    vector<pair<int, int>> v;
+    for (int i = 1; i <= n*m; i++){
+        cin >> arr[i];
+        v.push_back(make_pair(arr[i], i));
+        MX = max(MX, arr[i]);
+    }
+    sort(v.rbegin(), v.rend());
+    init();
+    for (int i = 0; i < n*m; i++){
+        int val = v[i].first, x = v[i].second;
+        if (val == MX){ in[x] = true; continue; }
+        if (x%m != 1 && in[x-1]) unite(x, x-1); //Merge with left
+        if (x%m && in[x+1]) unite(x, x+1); //Merge with right
+        if (x > m && in[x-m]) unite(x, x-m); //Merge with top
+        if (x+m <= n*m && in[x+m]) unite(x, x+m); //Merge with bottom
+        in[x] = true;
+    }
+    for (int i = 1; i <= n*m; i++) cout << arr[i]-res[i] << (i%m == 0? "\n" : " ");
 }
 // g++ -std=c++17 -o a test.cpp && ./a < a.in

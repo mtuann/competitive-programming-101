@@ -21,6 +21,8 @@ int main() {
     n = 100;
     for (int i = 0; i < n; ++i) {
         cout << i << " " << (i & (-i)) << endl;
+        // explain value of (i & (i))
+        
     }
     return 0;
 }
