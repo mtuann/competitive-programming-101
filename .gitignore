@@ -1,3 +1,12 @@
 *.pdf
-*/a
-**/a.in
+*.in
+*.out
+*.ans
+*.diff
+*.tmp
+*.exe
+*.o
+*.inp
+*.out
+*.ans
+.DS_Store

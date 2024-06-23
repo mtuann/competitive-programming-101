@@ -2,10 +2,14 @@ This Github provides a collection of training materials for the [Competitive Pro
 
 ## Topics
 - [Training Topic from Beginner to Advanced](training-topic/README.md)
-- [Graph Theory](graphs/README.md)
+- [Graph Theory](graph-theory/README.md)
 - [Data Structures](data-structures/README.md)
 - [Dynamic Programming](dynamic-programming/README.md)
 - [String Algorithms](string-algorithms/README.md)
+- [Geometry](geometry/README.md)
+- [Number Theory](number-theory/README.md)
+- [Combinatorics](combinatorics/README.md)
+- [Game Theory](game-theory/README.md)
 
 <!--
 - [Mathematics](mathematics/README.md)
