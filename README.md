@@ -10,13 +10,10 @@ This Github provides a collection of training materials for the [Competitive Pro
 - [Number Theory](number-theory/README.md)
 - [Combinatorics](combinatorics/README.md)
 - [Game Theory](game-theory/README.md)
-
-<!--
 - [Mathematics](mathematics/README.md)
+- [Miscellaneous](miscellaneous/README.md)
 - [Techniques](techniques/README.md)
 - [Tips and Tricks](tips-and-tricks/README.md)
-- [Miscellaneous](miscellaneous/README.md) -->
-
 
 ## Resources
 - [Weird cpp tricks (Vietnamese's blog)](https://leduythuccs.github.io/2021-03-28-Weird-cpp-tricks/)
