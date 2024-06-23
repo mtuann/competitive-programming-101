@@ -4,10 +4,9 @@
   - [**3. Advanced Concepts**](#3-advanced-concepts)
   - [**4. Expert Level Concepts**](#4-expert-level-concepts)
   - [**5. Problem-Solving Strategies**](#5-problem-solving-strategies)
-  - [Resources](#resources)
-  - [Advanced Topics for ICPC Training](#advanced-topics-for-icpc-training)
-  - [Resources for Advanced Training](#resources-for-advanced-training)
-  - [Recommended Practices](#recommended-practices)
+  - [**6. Advanced Topics for ICPC Training**](#6-advanced-topics-for-icpc-training)
+  - [**7. Resources for Training**](#7-resources-for-training)
+  - [**8. Recommended Practices**](#8-recommended-practices)
 ### Competitive Programming Syllabus for IOI/ ICPC Training
 
 #### **1. Basic Concepts**
@@ -139,27 +138,7 @@
    - Reducing space complexity.
    - Trade-offs and approximations.
 
-### IOI Resources
-1. **Books**
-   - "Introduction to Algorithms" by Cormen, Leiserson, Rivest, and Stein.
-   - "Competitive Programming" by Steven Halim.
-   - "Algorithm Design Manual" by Steven Skiena.
-
-2. **Online Platforms**
-   - Codeforces.
-   - AtCoder.
-   - HackerRank.
-   - LeetCode.
-   - SPOJ.
-   - TopCoder.
-
-3. **Practice Sites**
-   - UVa Online Judge.
-   - CodeChef.
-   - CSES Problem Set.
-
-
-### Advanced Topics for ICPC Training
+### 6. Advanced Topics for ICPC Training
 
 #### **1. Advanced Data Structures**
 
@@ -293,9 +272,12 @@
    - Parallel Dynamic Programming.
    - Use of OpenMP and MPI for Parallelism.
 
-### Resources for Advanced Training
+### 7. Resources for Training
 
 1. **Books**
+   - "Introduction to Algorithms" by Cormen, Leiserson, Rivest, and Stein.
+   - "Competitive Programming" by Steven Halim.
+   - "Algorithm Design Manual" by Steven Skiena.
    - "The Art of Computer Programming" by Donald Knuth.
    - "Advanced Data Structures" by Peter Brass.
    - "Approximation Algorithms" by Vijay V. Vazirani.
@@ -314,15 +296,19 @@
    - CodeChef.
    - HackerRank.
    - LeetCode.
-
+   - SPOJ.
+   
 4. **Practice Contests and Platforms**
    - ICPC Live Archive.
    - Kattis.
    - Timus Online Judge.
    - Google Code Jam Archives.
    - Facebook Hacker Cup Archives.
+   - UVa Online Judge.
+   - CodeChef.
+   - CSES Problem Set.
 
-### Recommended Practices
+### 8. Recommended Practices
 
 1. **Regular Participation in Contests**
    - Participate in regular online contests on platforms like Codeforces, AtCoder, and CodeChef.
