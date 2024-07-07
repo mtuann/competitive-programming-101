@@ -1,5 +1,7 @@
 In this tutorial, we will learn how to generate test cases and check the output of the product problem: Given two integers `a` and `b`, you need to calculate the product of `a` and `b` ($1 \leq a, b \leq 10^9$.)
 
+The model solution follows the tutorial of [
+Hanh Van Pham](https://www.youtube.com/watch?v=jrm8gU-7B4o&list=PLXSK7hGtCiHudz50Vbykh9zaR6HON1sIt&index=6). Please give him a like and subscribe to his channel.
 
 ### Step 01: Write `product_gen.cpp`
 ```cpp
