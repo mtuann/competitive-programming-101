@@ -15,6 +15,7 @@ This Github provides a collection of training materials for the [Competitive Pro
 - [Techniques](techniques/README.md)
 - [Tips and Tricks](tips-and-tricks/README.md)
 - [Miscellaneous](miscellaneous/README.md)
+- [x] [Generate Test Cases and Check Solution](training-topic/product-gen/README.md) 
 
 
 ## Resources

@@ -23,8 +23,8 @@ void tarjanDFS(int u, vector<vector<int>>& sccs) {
             printf("  dfs(%d) from (%d)\n", v, u);
             tarjanDFS(v, sccs);
             low[u] = min(low[u], low[v]);
-        // } else if (in_stack[v]) {
-        } else {
+        } else if (in_stack[v]) {
+        // } else {
             printf("  back edge from %d to %d\n", u, v);
             low[u] = min(low[u], disc[v]);
         }
