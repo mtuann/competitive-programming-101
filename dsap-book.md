@@ -99,7 +99,7 @@ Công thức tổng quát:
 - Sử dụng string để biểu diễn số nguyên lớn, và cài đặt các phép toán so sánh, cộng, trừ, nhân, chia, mod trên số nguyên lớn. Với các phép tính nhân và mod trên số nguyên lớn, ta cần cài đặt thuật toán nhân và chia với một số nhỏ hơn.
 
 
-# II. Sắp xêp và tìm kiếm
+# II. Sắp xếp và tìm kiếm
 - Bubble sort
 - Quick sort
 - Counting sort
@@ -111,19 +111,19 @@ Công thức tổng quát:
     - Radix sort
 
 # III. Thiết kế giải thuật
-## Quay lui (Backtracking)
+## 1. Quay lui (Backtracking)
 - Bài toán xếp hậu
 - In ra chỉnh hợp lặp/ không lặp, tổ hợp chập k của n phần tử
 - Dùng nhánh và cận để giảm thời gian chạy của thuật toán quay lui (ví dụ bài toán TSP - Travelling Salesman Problem)
 
-## Tham lam (Greedy)
+## 2. Tham lam (Greedy)
 - Lập lịch giảm thiểu thời gian chờ đợi. Cho $N$ công việc, mỗi công việc $i$ có thời gian thực hiện $t_i$ và thời gian deadline $d_i$. Mục tiêu là sắp xếp các công việc sao cho tổng thời gian chờ đợi nhỏ nhất.
 
 Nhận xét:
 - Nếu sắp xếp các công việc theo thứ tự tăng dần thời gian thực hiện $t_i$ thì tổng thời gian chờ đợi sẽ nhỏ nhất.
 - Độ phức tạp: $O(N \log N)$
 
-## Chia để trị (Divide and Conquer)
+## 3. Chia để trị (Divide and Conquer)
 - Bài toán tính $a^n$ với $n$ là số nguyên dương
 - Bài toán Diff, trả về max(a[i] - a[j]) với mọi cặp $1 \leq i, j \leq n$ ($i \neq j$).
 - Bài toán lát nền, kích thước $n \times n$ với $n = 2^k$ ($ 1 \leq k \leq 10$) bị khuyết một phần tư tại góc trên phải (khuyết phần 2) bằng những viên gạch hình thước tạo bởi 3 ô vuông đơn vị.
@@ -133,42 +133,46 @@ Nhận xét:
 - Merge sort
     - Lời giải: Đệ quy sắp xếp nửa đầu mảng, sắp xếp nửa sau mảng, sau đó trộn hai mảng đã sắp xếp.
 
-## Quy hoạch động (Dynamic Programming)
+## 4. Quy hoạch động (Dynamic Programming)
 - Số Fibonacci: Sử dụng mảng lưu trữ các số Fibonacci đã tính, $F_i = F_{i-1} + F_{i-2}$ với $i \geq 2$, $F_0 = 0, F_1 = 1$.
 - Dãy con đơn điệu tăng dài nhất: Sử dụng mảng $dp[i]$ lưu độ dài dãy con đơn điệu tăng dài nhất kết thúc tại phần tử thứ $i$.
     - Với mỗi $j < i$, nếu $a[j] < a[i]$ thì $dp[i] = \max(dp[i], dp[j] + 1)$.
     - Đáp án của bài toán là $\max(dp[i])$ với $0 \leq i < n$. Bạn đọc có thể chèn phần tử - infinify và infinify đầu và cuối mảng ban đầu để đảm bảo dãy con tăng dài nhất gồm cả 2 phần tử này.
     - Có thể cải tiến thuật toán bằng cách sử dụng binary search để tìm vị trí chèn phần tử $a[i]$ vào mảng $dp$. Ở cách này ta sẽ duy trì một mảng $dp$ tăng dần, mỗi lần cập nhật $dp[i]$ ta sẽ tìm vị trí chèn phần tử $a[i]$ vào mảng $dp$ bằng binary search.
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
 
-// Function to calculate the length of the longest increasing subsequence
-int longestIncreasingSubsequence(std::vector<int>& nums) {
-    if (nums.empty()) return 0;
+        <details>
+            <summary>LIS - CPP-Code</summary>
 
-    std::vector<int> lis; // This will store the smallest tail for all increasing subsequences of different lengths
+            ```cpp
+            #include <iostream>
+            #include <vector>
+            #include <algorithm>
 
-    for (int num : nums) {
-        auto it = std::lower_bound(lis.begin(), lis.end(), num); // Find the position of the smallest number >= num
-        if (it == lis.end()) {
-            lis.push_back(num); // If num is greater than all elements in lis, append it
-        } else {
-            *it = num; // Otherwise, replace the first element >= num with num
-        }
-    }
+            // Function to calculate the length of the longest increasing subsequence
+            int longestIncreasingSubsequence(std::vector<int>& nums) {
+                if (nums.empty()) return 0;
 
-    return lis.size(); // The size of lis is the length of the longest increasing subsequence
-}
+                std::vector<int> lis; // This will store the smallest tail for all increasing subsequences of different lengths
 
-int main() {
-    std::vector<int> nums = {10, 9, 2, 5, 3, 7, 101, 18};
-    std::cout << "Length of Longest Increasing Subsequence: " << longestIncreasingSubsequence(nums) << std::endl;
-    return 0;
-}
+                for (int num : nums) {
+                    auto it = std::lower_bound(lis.begin(), lis.end(), num); // Find the position of the smallest number >= num
+                    if (it == lis.end()) {
+                        lis.push_back(num); // If num is greater than all elements in lis, append it
+                    } else {
+                        *it = num; // Otherwise, replace the first element >= num with num
+                    }
+                }
 
-```
+                return lis.size(); // The size of lis is the length of the longest increasing subsequence
+            }
+
+            int main() {
+                std::vector<int> nums = {10, 9, 2, 5, 3, 7, 101, 18};
+                std::cout << "Length of Longest Increasing Subsequence: " << longestIncreasingSubsequence(nums) << std::endl;
+                return 0;
+            }
+            ```
+        </details>
 
 - Bài toán cái túi. Cho $N$ loại vật phẩm, mỗi loại có khối lượng $w_i$ và giá trị $v_i$, và một cái túi có khả năng chứa tối đa $W$ khối lượng. Mục tiêu là chọn một số vật phẩm sao cho tổng giá trị của chúng là lớn nhất mà tổng khối lượng không vượt quá $W$.
     - Sử dụng mảng $dp[i][j]$ lưu giá trị lớn nhất có thể đạt được với $i$ vật phẩm đầu tiên và khối lượng tối đa là $j$.
