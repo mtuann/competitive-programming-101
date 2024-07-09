@@ -141,37 +141,37 @@ Nhận xét:
     - Có thể cải tiến thuật toán bằng cách sử dụng binary search để tìm vị trí chèn phần tử $a[i]$ vào mảng $dp$. Ở cách này ta sẽ duy trì một mảng $dp$ tăng dần, mỗi lần cập nhật $dp[i]$ ta sẽ tìm vị trí chèn phần tử $a[i]$ vào mảng $dp$ bằng binary search.
 
         <details>
-            <summary>LIS - CPP-Code</summary>
+        <summary>LIS - CPP-Code</summary>
 
-            ```cpp
-            #include <iostream>
-            #include <vector>
-            #include <algorithm>
+        ```cpp
+        #include <iostream>
+        #include <vector>
+        #include <algorithm>
 
-            // Function to calculate the length of the longest increasing subsequence
-            int longestIncreasingSubsequence(std::vector<int>& nums) {
-                if (nums.empty()) return 0;
+        // Function to calculate the length of the longest increasing subsequence
+        int longestIncreasingSubsequence(std::vector<int>& nums) {
+            if (nums.empty()) return 0;
 
-                std::vector<int> lis; // This will store the smallest tail for all increasing subsequences of different lengths
+            std::vector<int> lis; // This will store the smallest tail for all increasing subsequences of different lengths
 
-                for (int num : nums) {
-                    auto it = std::lower_bound(lis.begin(), lis.end(), num); // Find the position of the smallest number >= num
-                    if (it == lis.end()) {
-                        lis.push_back(num); // If num is greater than all elements in lis, append it
-                    } else {
-                        *it = num; // Otherwise, replace the first element >= num with num
-                    }
+            for (int num : nums) {
+                auto it = std::lower_bound(lis.begin(), lis.end(), num); // Find the position of the smallest number >= num
+                if (it == lis.end()) {
+                    lis.push_back(num); // If num is greater than all elements in lis, append it
+                } else {
+                    *it = num; // Otherwise, replace the first element >= num with num
                 }
-
-                return lis.size(); // The size of lis is the length of the longest increasing subsequence
             }
 
-            int main() {
-                std::vector<int> nums = {10, 9, 2, 5, 3, 7, 101, 18};
-                std::cout << "Length of Longest Increasing Subsequence: " << longestIncreasingSubsequence(nums) << std::endl;
-                return 0;
-            }
-            ```
+            return lis.size(); // The size of lis is the length of the longest increasing subsequence
+        }
+
+        int main() {
+            std::vector<int> nums = {10, 9, 2, 5, 3, 7, 101, 18};
+            std::cout << "Length of Longest Increasing Subsequence: " << longestIncreasingSubsequence(nums) << std::endl;
+            return 0;
+        }
+        ```
         </details>
 
 - Bài toán cái túi. Cho $N$ loại vật phẩm, mỗi loại có khối lượng $w_i$ và giá trị $v_i$, và một cái túi có khả năng chứa tối đa $W$ khối lượng. Mục tiêu là chọn một số vật phẩm sao cho tổng giá trị của chúng là lớn nhất mà tổng khối lượng không vượt quá $W$.
@@ -181,7 +181,7 @@ Nhận xét:
     - Độ phức tạp: $O(NW)$.
 
 # IV. Các thuật toán trên đồ thị
-## Các khái niệm cơ bản
+## 1. Các khái niệm cơ bản
 Đồ thị là một cấu trúc dữ liệu biểu diễn mối quan hệ giữa các đối tượng. Đồ thị gồm các đỉnh (vertex) và các cạnh (edge) nối các đỉnh với nhau.
 
 Kí hiệu: $G = (V, E)$ với $V$ là tập hợp các đỉnh và $E$ là tập hợp các cạnh.
@@ -221,14 +221,14 @@ Các khái niệm khác:
 - Đồ thị có hướng có trọng số (directed weighted graph): Đồ thị có hướng với mỗi cạnh được gán một trọng số.
 - Đồ thị đường: chuyển đổi cạnh của đồ thị gốc thành đỉnh trong đồ thị mới. Cạnh $(x, y)$ trên đồ thị mới nếu tồn tại đỉnh $z$ sao cho $(x, z)$ và $(z, y)$ là cạnh trên đồ thị gốc.
 
-## Biểu diễn đồ thị
+## 2. Biểu diễn đồ thị
 - Ma trận kề (adjacency matrix): Ma trận $A$ với $A_{ij} = 1$ nếu có cạnh nối giữa đỉnh $i$ và đỉnh $j$, ngược lại $A_{ij} = 0$.
 - Danh sách cạnh (edge list): Sử dụng một mảng gồm $M$ cặp $(u, v)$ biểu diễn cạnh nối giữa đỉnh $u$ và đỉnh $v$.
 - Danh sách kề (adjacency list): Sử dụng một mảng gồm $N$ danh sách liên kết, mỗi danh sách liên kết chứa các đỉnh kề với một đỉnh.
 - Danh sách liên thuộc (incidence lists): Sử dụng $head[u]$ để lưu con trỏ đầu tiên của danh sách liên thuộc của đỉnh $u$, $link[i]$ là chỉ số cung kế tiếp cung $e[i]$ trong danh sách liên thuộc của đỉnh $u$, trong đó $e[i]$ là cung thứ $i$ của đồ thị. Trong trường hợp $e[i]$ là cung cuối cùng của đỉnh $u$, ta có $link[i] = -1$.
 
-## Các thuật toán tìm kiếm trên đồ thị
-### Duyệt theo chiều sâu (DFS - Depth First Search)
+## 3. Các thuật toán tìm kiếm trên đồ thị
+### 3.1. Duyệt theo chiều sâu (DFS - Depth First Search)
 - Duyệt theo chiều sâu từ một đỉnh $u$:
     - Đánh dấu đỉnh $u$ đã được duyệt.
     - Duyệt qua tất cả các đỉnh kề $v$ chưa được duyệt, đánh dấu chúng và gọi đệ quy DFS($v$).
@@ -240,7 +240,7 @@ Các khái niệm khác:
     - Cây DFS
     - Thứ tự duyệt các đỉnh trong DFS (duyệt đến và duyệt xong)
 
-### Duyệt theo chiều rộng (BFS - Breadth First Search)
+### 3.2. Duyệt theo chiều rộng (BFS - Breadth First Search)
 - Duyệt theo chiều rộng từ một đỉnh $u$:
     - Khởi tạo hàng đợi $Q$ rỗng, đánh dấu đỉnh $u$ đã được duyệt.
     - Thêm $u$ vào $Q$.
@@ -254,47 +254,47 @@ Các khái niệm khác:
     - Cây BFS
     - Thứ tự duyệt các đỉnh trong BFS (duyệt đến và duyệt xong)
 
-## Tính liên thông của đồ thị
+## 4. Tính liên thông của đồ thị
 - Đồ thị vô hướng $G = (V, E)$ được gọi là liên thông nếu có đường đi giữa mọi cặp đỉnh $(u, v) \in V$ (connected graph).
 - Đồ thị vô hướng $G = (V, E)$, $U \subseteq V$ được gọi là một thành phần liên thông (connected component) nếu có đường đi từ mọi đỉnh $u \in U$ đến mọi đỉnh $v \in U$.
     - Bài toán tìm khớp nối (articulation points) và cầu (bridges) trên đồ thị vô hướng.
 - Đồ thị có hướng $G = (V, E)$ được gọi là liên thông mạnh (strongly connected) nếu có đường đi từ mọi đỉnh $u$ đến mọi đỉnh $v$ và từ mọi đỉnh $v$ đến mọi đỉnh $u$. Đồ thị có hướng $G$ được gọi là liên thông yếu (weakly connected) nếu bỏ hướng của các cạnh thì đồ thị trở thành đồ thị liên thông.
     - Bài toán tìm thành phần liên thông mạnh (strongly connected components) trên đồ thị có hướng sử dụng thuật toán Kosaraju và Tarjan (các tập con của đồ thị mà mỗi cặp đỉnh trong tập con đều có đường đi giữa chúng).
-### Bao đóng của đồ thị vô hướng
+### 4.1. Bao đóng của đồ thị vô hướng
 - Đồ thị đầy đủ $K_N$ là đồ thị vô hướng có $N$ đỉnh và mọi cặp đỉnh đều được nối với nhau.
 - Bao đóng của một đồ thị vô hướng $G = (V, E)$ là đồ thị vô hướng $G' = (V, E')$ trong đó cạnh $(u, v)$ thuộc $E'$ nếu có đường đi giữa $u$ và $v$ trên $G$.
     - Sử dụng thuật toán Warshall để tìm bao đóng của đồ thị vô hướng. Độ phức tạp: $O(N^3)$.
 
-### Bài toán xác định các thành phần liên thông mạnh
+### 4.2. Bài toán xác định các thành phần liên thông mạnh
 - Sử dụng DFS để duyệt đồ thị theo chiều sâu, ngoài những cung nằm trên cây DFS, những cung còn lại chia làm 3 loại: cung ngược, cung xuôi và cung chéo (quay lui).
 - Thuật toán Tarjan: Sử dụng DFS để duyệt đồ thị, duyệt qua tất cả các đỉnh và cung, gán thời gian thăm và thời gian hoàn thành cho mỗi đỉnh, sử dụng stack để lưu trữ các đỉnh đã duyệt, xác định thành phần liên thông mạnh của đồ thị.
     - Độ phức tạp: $O(N + M)$ với $N$ là số đỉnh và $M$ là số cạnh của đồ thị.'
 - Thuật toán Kosaraju-Sharir: Sử dụng DFS để duyệt đồ thị và đồ thị đảo, xác định thành phần liên thông mạnh của đồ thị.
     - Độ phức tạp: $O(N + M)$ với $N$ là số đỉnh và $M$ là số cạnh của đồ thị.
 
-## Sắp xếp topological
+## 5. Sắp xếp topological
 - Đồ thị có hướng $G = (V, E)$ được gọi là đồ thị acyclic nếu không chứa chu trình.'
 - Sắp xếp topological của một đồ thị acyclic là một cách sắp xếp các đỉnh sao cho mọi cạnh nối từ đỉnh $u$ đến đỉnh $v$ thì $u$ đứng trước $v$.
 - Sắp xếp topological của một đồ thị acyclic có thể được tìm bằng cách sử dụng thuật toán DFS hoặc thuật toán Kahn.
     - Thuật toán DFS: Duyệt đồ thị theo chiều sâu, sau khi duyệt xong một đỉnh thì thêm đỉnh đó vào đầu danh sách kết quả.
     - Thuật toán Kahn: Tìm tất cả các đỉnh không có cạnh vào, sau đó xóa đỉnh đó khỏi đồ thị và lặp lại quá trình cho đến khi không còn đỉnh nào.
     - Độ phức tạp: $O(N + M)$ với $N$ là số đỉnh và $M$ là số cạnh của đồ thị.
-## Ứng dụng của BFS và DFS
+## 6. Ứng dụng của BFS và DFS
 
-### Xây dựng cây khung của đồ thị
+### 6.1. Xây dựng cây khung của đồ thị
 - Cây khung của đồ thị $G = (V, E)$ là một đồ thị con của $G$ chứa tất cả các đỉnh của $G$ và là một cây.
 
 - Cây khung nhỏ nhất (minimum spanning tree - MST) của đồ thị vô hướng có trọng số là cây khung có tổng trọng số nhỏ nhất.
     - Sử dụng thuật toán Prim hoặc thuật toán Kruskal để tìm cây khung nhỏ nhất.
     - Độ phức tạp: $O(M \log N)$ với $N$ là số đỉnh và $M$ là số cạnh của đồ thị.
 
-### Tập các chu trình cơ sở của đồ thị
+### 6.2. Tập các chu trình cơ sở của đồ thị
 - Xét đồ thị vô hướng liên thông $G = (V, E)$, gọi $T = (V, E_T)$ là một cây khung của $G$. Nếu thêm một cạnh $(u, v)$ vào $T$ thì sẽ tạo thành một chu trình. Các chu trình này được gọi là chu trình cơ sở (fundamental cycle) của cạnh $(u, v)$.
 
-### Bài toán định chiều đồ thị
+### 6.3. Bài toán định chiều đồ thị
 - Đồ thị vô hướng $G = (V, E)$ có thể được định chiều bằng cách thêm hướng cho mỗi cạnh của đồ thị để được một đồ thị có hướng liên thông mạnh.
 
-### Liệt kê khớp và cầu của đồ thị
+### 6.4. Liệt kê khớp và cầu của đồ thị
 - Khớp (articulation points) là đỉnh mà nếu xóa nó ra khỏi đồ thị thì số thành phần liên thông của đồ thị tăng lên.
 - Cầu (bridges) là cạnh mà nếu xóa nó ra khỏi đồ thị thì số thành phần liên thông của đồ thị tăng lên.
 
@@ -302,11 +302,11 @@ Các khái niệm khác:
     - Độ phức tạp: $O(N + M)$ với $N$ là số đỉnh và $M$ là số cạnh của đồ thị.
     - Chi tiết: Duyệt đồ thị bằng DFS, gán thời gian thăm và thời gian hoàn thành cho mỗi đỉnh, xác định thời gian thăm sớm nhất của mỗi đỉnh có thể đến được, xác định thời gian thăm sớm nhất của mỗi đỉnh có thể đến được qua một cạnh ngược, xác định khớp và cầu của đồ thị.
 
-### Các thành phần song liên thông
+### 6.5. Các thành phần song liên thông
 - Đồ thị vô hướng $G = (V, E)$ được gọi là đồ thị song liên thông (biconnected graph) nếu không chứa khớp và mọi cặp đỉnh đều có ít nhất hai đường đi đến nhau.
 
-## Đồ thị Euler và Hamilton
-### Đồ thị Euler
+## 7. Đồ thị Euler và Hamilton
+### 7.1. Đồ thị Euler
 - Tìm chu trình Euler trên đồ thị vô hướng $G = (V, E)$ là tìm một chu trình đi qua mỗi cạnh đúng một lần.
 
 - Đồ thị Euler tồn tại nếu và chỉ nếu đồ thị liên thông và mọi đỉnh của đồ thị có bậc chẵn.
@@ -316,7 +316,7 @@ Các khái niệm khác:
     - Chi tiết: Chọn một đỉnh bất kỳ làm đỉnh xuất phát, duyệt qua tất cả các cạnh của đồ thị, chọn cạnh không phải cầu nếu có, nếu không chọn cầu.
     - Lưu ý: Đồ thị có thể chứa nhiều chu trình Euler.
 
-### Đồ thị Hamilton
+### 7.2. Đồ thị Hamilton
 - Tìm chu trình Hamilton trên đồ thị $G = (V, E)$ là tìm một chu trình đi qua mỗi đỉnh đúng một lần.
 
 - Đồ thị Hamilton tồn tại nếu và chỉ nếu đồ thị liên thông và bậc của mọi đỉnh lớn hơn hoặc bằng $N/2$.
@@ -328,66 +328,66 @@ Hai bài toán nổi tiếng liên quan:
 - Bài toán người du lịch (Travelling Salesman Problem - TSP): Tìm chu trình Hamilton ngắn nhất trên đồ thị đầy đủ có trọng số.
 - Bài toán người đưa thư (Chinese Postman Problem): Tìm chu trình Euler ngắn nhất trên đồ thị có hướng.
 
-## Các thuật toán tìm đường đi ngắn nhất
-### Đường đi ngắn nhất xuất phát từ một đỉnh
+## 8. Các thuật toán tìm đường đi ngắn nhất
+### 8.1. Đường đi ngắn nhất xuất phát từ một đỉnh
 - Thuật toán Dijkstra
 - Thuật toán Bellman-Ford
 
-### Đường đi ngắn nhất giữa mọi cặp đỉnh
+### 8.2. Đường đi ngắn nhất giữa mọi cặp đỉnh
 - Thuật toán Floyd-Warshall
 - Thuật toán Johnson
 
-## Cây khung nhỏ nhất
+## 8.3. Cây khung nhỏ nhất
 - Thuật toán Prim
 - Thuật toán Kruskal
 
-## Luồng cực đại trên mạng
+## 9. Luồng cực đại trên mạng
 - Thuật toán Ford-Fulkerson
 - Thuật toán Edmonds-Karp
 - Thuật toán Dinic
 - Thuật toán Push-Relabel (FIFO Preflow-Push)
 
-### Mạng với nhiều nguồn và nhiều đích
+### 9.1. Mạng với nhiều nguồn và nhiều đích
 - Sử dụng phương pháp chuyển đổi mạng nhiều nguồn và nhiều đích thành mạng một nguồn và một đích.
 
-### Mạng với sức chứa trên cả các đỉnh và các cung
+### 9.2. Mạng với sức chứa trên cả các đỉnh và các cung
 - Sử dụng phương pháp chuyển đổi mạng với sức chứa trên cả các đỉnh và các cung thành mạng với sức chứa chỉ trên các cung.
 
-### Mạng với ràng buộc luồng dương bị chặn 2 phía
+### 9.3. Mạng với ràng buộc luồng dương bị chặn 2 phía
 - Luồng dương trên mỗi cung $e$ không vượt quá $c_e$ và không nhỏ hơn $l_e$.
 
-### Mạng với sức chứa âm
+### 9.4. Mạng với sức chứa âm
 
 
-### Lát cắt cực tiểu
+### 9.5. Lát cắt cực tiểu
 Loại bỏ một số cạnh để đồ thị mất tính liên thông, cần tìm phương án sao cho tổng trọng số của các cạnh bị loại bỏ là nhỏ nhất.
 
 - Thuật toán Min-Cost Max-Flow
 
-## Bộ ghép cực đại trên đồ thị hai phía
+## 10. Bộ ghép cực đại trên đồ thị hai phía
 - Thuật toán Hopcroft-Karp
 - Thuật toán Hungarian
 - Thuật toán Blossom
 
 
 # V. Các kiểu dữu liệu trừu tượng và cấu trúc dữ liệu
-## List
+## 1. List
 - Danh sách liên kết đơn
 - Danh sách liên kết kép
 - Danh sách liên kết vòng
 - Danh sách liên kết vòng kép
 
-## Stack
+## 2. Stack
 
 Ngăn xếp (stack) là một cấu trúc dữ liệu dạng LIFO (Last In First Out), tức là phần tử cuối cùng được thêm vào ngăn xếp sẽ là phần tử đầu tiên được lấy ra khỏi ngăn xếp.
 
 
-## Queue
+## 3. Queue
 
 Hàng đợi (queue) là một cấu trúc dữ liệu dạng FIFO (First In First Out), tức là phần tử đầu tiên được thêm vào hàng đợi sẽ là phần tử đầu tiên được lấy ra khỏi hàng đợi.
 
-## Tree
-### Các khoái niệm cơ bản
+## 4. Tree
+### 4.1. Các khoái niệm cơ bản
 - Cây là một cấu trúc dữ liệu phân cấp, bao gồm một nút gốc và các nút con của nó.
 - Một nút có thể có nhiều nút con, được gọi là nút cha của các nút con đó.
 - Một nút không có nút con được gọi là nút lá.
@@ -397,41 +397,41 @@ Hàng đợi (queue) là một cấu trúc dữ liệu dạng FIFO (First In Fir
 - Forest là một tập hợp các cây.
 - Siblings: Hai nút cùng một nút cha.
 
-### Các loại cây
+### 4.2. Các loại cây
 - Cây nhị phân: Mỗi nút có tối đa hai nút con.
 - Cây nhị phân đầy đủ: Mỗi nút có đúng hai nút con hoặc không có nút con nào.
 - Cây $k$-ary: Mỗi nút có tối đa $k$ nút con (cây k phân).
 
-### Phép duyệt cây
+### 4.3. Phép duyệt cây
 - Duyệt theo thứ tự trước (pre-order traversal): Duyệt nút gốc trước, sau đó duyệt nút con trái và nút con phải.
 - Duyệt theo thứ tự giữa (in-order traversal): Duyệt nút con trái trước, sau đó duyệt nút gốc và cuối cùng là duyệt nút con phải.
 - Duyệt theo thứ tự sau (post-order traversal): Duyệt nút con trái trước, sau đó duyệt nút con phải và cuối cùng là duyệt nút gốc.
 
-## Ký pháp tiền tố, trung tố và hậu tố
+## 5. Ký pháp tiền tố, trung tố và hậu tố
 - Công thức tiền tố: Toán tử đứng trước hai toán hạng.
 - Công thức trung tố: Toán tử đứng giữa hai toán hạng.
 - Công thức hậu tố: Toán tử đứng sau hai toán hạng.
 
-### Chuyển đổi giữa các ký pháp
+### 5.1. Chuyển đổi giữa các ký pháp
 - Chuyển đổi từ trung tố sang hậu tố: Sử dụng stack để lưu trữ toán tử, duyệt qua từng phần tử trong biểu thức trung tố, nếu gặp toán hạng thì thêm vào biểu thức hậu tố, nếu gặp toán tử thì thêm vào stack, nếu gặp dấu ngoặc mở thì thêm vào stack, nếu gặp dấu ngoặc đóng thì lấy toán tử từ stack cho đến khi gặp dấu ngoặc mở.
 - Xây dựng cây nhị phân từ biểu thức hậu tố: Sử dụng stack để lưu trữ cây nhị phân, duyệt qua từng phần tử trong biểu thức hậu tố, nếu gặp toán hạng thì thêm vào stack, nếu gặp toán tử thì tạo một cây nhị phân với toán tử là nút gốc, lấy hai nút con từ stack và thêm vào cây nhị phân.
 
-## Cây nhị phân tìm kiếm
-### Các thao tác cơ bản
+## 6. Cây nhị phân tìm kiếm
+### 6.1. Các thao tác cơ bản
 - Tìm kiếm: Tìm kiếm một phần tử trong cây nhị phân tìm kiếm.
 - Thêm: Thêm một phần tử vào cây nhị phân tìm kiếm.
 - Xóa: Xóa một phần tử khỏi cây nhị phân tìm kiếm.
 - Duyệt: Duyệt cây nhị phân tìm kiếm theo thứ tự trước, giữa và sau.
 - Tìm phần tử lớn nhất và nhỏ nhất trong cây nhị phân tìm kiếm.
-### Cây nhị phân tìm kiếm tự cân bằng
+### 6.2. Cây nhị phân tìm kiếm tự cân bằng
 - Cây AVL
 - Cây đỏ đen
 - Cây Splay
 
-## Cây nhị phân tìm kiếm ngẫu nhiên
+## 7. Cây nhị phân tìm kiếm ngẫu nhiên
 - Cây Treap
 
-## Một số ứng dụng của cây nhị phân tìm kiếm
+## 8. Một số ứng dụng của cây nhị phân tìm kiếm
 - Cho một danh sách $L$ để chứa các số nguyên với một trong 2 loại thao tác. Nhiệm vụ của bạn là in ra danh sách $L$ sau $Q$ thao tác.
     - Thêm một số nguyên $x$ vào danh sách $L$ tại vị trí $k$.
     - Xóa số nguyên tại vị trí $k$ khỏi danh sách $L$. 
@@ -443,26 +443,26 @@ Hàng đợi (queue) là một cấu trúc dữ liệu dạng FIFO (First In Fir
 - Điểm giao nhiều nhất
 
 # VI. Hình học tính toán
-## Các khái niệm cơ bản
+## 1. Các khái niệm cơ bản
 - Hệ tọa độ Descartes: Hệ tọa độ 2D với trục $x$ và trục $y$.
 - Tọa độ: Một điểm trong hệ tọa độ Descartes được biểu diễn bởi cặp số thực $(x, y)$.
 - Khoảng cách giữa hai điểm: $\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}$.
 - Góc giữa hai điểm: $\arctan\left(\frac{y_2 - y_1}{x_2 - x_1}\right)$.
 - Góc giữa hai vector: $\arccos\left(\frac{u \cdot v}{\|u\| \cdot \|v\|}\right)$.
 
-## Các phép biến đổi tọa độ cơ bản
+## 2. Các phép biến đổi tọa độ cơ bản
 - Phép quay: Quay một điểm $(x, y)$ quanh gốc tọa độ một góc $\theta$ theo chiều kim đồng hồ từ $(x, y)$ sang $(x \cos \theta - y \sin \theta, x \sin \theta + y \cos \theta)$.
 - Tịnh tiến: Dịch chuyển một điểm từ $(x, y)$ sang $(x + a, y + b)$.
 - Phép quay quanh một điểm: Quay một điểm $(x, y)$ quanh một điểm $(a, b)$ một góc $\theta$ theo chiều kim đồng hồ từ $(x, y)$ sang $(a + (x - a) \cos \theta - (y - b) \sin \theta, b + (x - a) \sin \theta + (y - b) \cos \theta)$.
 - Phép vị tự
 
-## Một số khái niệm khác
+## 3. Một số khái niệm khác
 - Tích chấm (dot product): $u \cdot v = u_x v_x + u_y v_y$.
 - Tích vector (cross product): $u \times v = u_x v_y - u_y v_x$.
 - Đường thẳng: $Ax + By + C = 0$.
 - Đa giác: đường gấp khúc không tự cắt. Diện tích của đa giác: $\frac{1}{2} \sum_{i = 1}^{n} (x_i y_{i + 1} - x_{i + 1} y_i)$.
 - Đường tròn: $(x - a)^2 + (y - b)^2 = r^2$.
-## Một số bài toán hình học cơ bản
+## 4. Một số bài toán hình học cơ bản
 - Biểu diễn tuyến tính cho 3 vector $a, b, c$, tìm 2 số thực $p, q$ sao cho $c = pa + qb$.
 - Tìm giao điểm của hai đường thẳng $A_1x + B_1y + C_1 = 0$ và $A_2x + B_2y + C_2 = 0$.
 - Tìm giao điểm của 2 đoạn thẳng $AB$ và $CD$, với $A(x_1, y_1)$, $B(x_2, y_2)$, $C(x_3, y_3)$, $D(x_4, y_4)$.
@@ -472,7 +472,7 @@ Hàng đợi (queue) là một cấu trúc dữ liệu dạng FIFO (First In Fir
 - Tính diện tích của đa giác lồi $P$ với $n$ đỉnh $A_1, A_2, \dots, A_n$; $S = \frac{1}{2} \sum_{i = 1}^{n} (x_i y_{i + 1} - x_{i + 1} y_i)$.
 - Diện tích đường cong $y = f(x)$ giữa $x = a$ và $x = b$; $S = \int_{a}^{b} f(x) dx$.
 
-## Một số bài toán thông dụng khác
+## 5. Một số bài toán thông dụng khác
 - Tam giác với 3 điểm $A (A.x, A.y)$, $B (B.x, B.y)$, $C (C.x, C.y)$; trong đó $a, b, c$ là độ dài 3 cạnh, $p$ là nửa chu vi, $S$ là diện tích.
     - Đường tròn ngoại tiếp tam giác
     - Đường phân giác
@@ -480,7 +480,7 @@ Hàng đợi (queue) là một cấu trúc dữ liệu dạng FIFO (First In Fir
 - Kiểm tra điểm nằm trong đa giác lồi sử dụng thuật toán Ray Casting, Winding Number.
 - Tìm 2 điểm gần nhau nhất trong tập hợp các điểm sử dụng thuật toán Closest Pair of Points.
 
-## Các hàm cơ bản trong thư viện hình học tính toán
+## 6. Các hàm cơ bản trong thư viện hình học tính toán
 - Hàm kiểm soát sai số `is_equal`, so sánh hai số thực, $abs(a - b) < \epsilon$.
 - Hàm kiểm tra 2 điểm trùng nhau $a, b$ `is_same_point`
 - Khoảng cách 2 điểm $a, b$ `distance`, $\sqrt{(a.x - b.x)^2 + (a.y - b.y)^2}$.
@@ -501,7 +501,7 @@ Hàng đợi (queue) là một cấu trúc dữ liệu dạng FIFO (First In Fir
 - Check `inf` và `nan` trong C++: `isinf`, `isnan`. Check `zero`: `abs(x) < eps`.
 
 # VII. Lý thuyết trò chơi
-## Các khái niệm cơ bản
+## 1. Các khái niệm cơ bản
 Vị trí: Trạng thái của trò chơi tại một thời điểm nào đó.
 
 Luật chơi: Quy tắc để thực hiện một bước chơi từ một vị trí cho trước.
@@ -516,7 +516,7 @@ Trò chơi đối kháng: Trò chơi giữa hai người chơi, mỗi người c
 - Trò chơi Chomp: Một trò chơi với một bảng hình chữ nhật, mỗi lượt mỗi người chơi được phép ăn một phần hình chữ nhật, người chơi cuối cùng ăn phần hình chữ nhật ở góc trên cùng bên trái là người thắng cuộc.
 - Trò chơi Kayles: Một trò chơi với một dãy sỏi, mỗi lượt mỗi người chơi được phép xóa một số sỏi liên tiếp, người chơi cuối cùng không thể xóa nữa là người thắng cuộc.
 
-## Trò tổ hợp cân bằng
+## 2. Trò tổ hợp cân bằng
 - Trò chơi làm rỗng và phân chia
 - Trò chơi lấy bớt quân cờ
 - Trò chơi trừ dần
@@ -524,5 +524,6 @@ Trò chơi đối kháng: Trò chơi giữa hai người chơi, mỗi người c
 - Trò chơi trên đồ thị
 - Các trò chơi lật xu
 
-## Trò chơi hai người có tổng điểm bằng 0
+## 3. Trò chơi hai người có tổng điểm bằng 0
+
 
