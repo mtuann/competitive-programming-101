@@ -88,7 +88,9 @@ Công thức tổng quát:
 
 Công thức:
 - $C_0 = 1$
+
 - $C_n = \sum_{i=0}^{n-1} C_i \times C_{n-1-i}$ với mọi số nguyên dương $n \geq 1$
+
 
 Công thức tổng quát:
 - $C_n = \frac{1}{n+1} \times C(2n, n)$ với mọi số nguyên dương $n$

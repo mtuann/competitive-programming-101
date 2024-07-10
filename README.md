@@ -15,7 +15,9 @@ This Github provides a collection of training materials for the [Competitive Pro
 - [Techniques](techniques/README.md)
 - [Tips and Tricks](tips-and-tricks/README.md)
 - [Miscellaneous](miscellaneous/README.md)
+- [Data Structures and Algorithms (Vietnamese version: Cấu trúc dữ liệu và giải thuật)](training-topic/dsa-book.md)
 - [x] [Generate Test Cases and Check Solution](training-topic/product-gen/README.md) 
+- [x] [Subtasks Coding Template](training-topic/code-sub-task/README.md)
 
 
 ## Resources
@@ -24,7 +26,3 @@ This Github provides a collection of training materials for the [Competitive Pro
 - [USACO Training](http://train.usaco.org/usacogate) - A training program for the USA Computing Olympiad.
 - [USACO Guide](https://usaco.guide/) - A guide to help you prepare for USA Computing Olympiad.
 - [Tutorial - A way to Practice Competitive Programming : From Rating 1000 to 2400+ By E869120](https://codeforces.com/blog/entry/66909)
-
-<!-- - [Books](books/README.md)
-- [Courses](courses/README.md)
-- [Practice Websites](practice-websites/README.md) -->
