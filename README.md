@@ -15,7 +15,7 @@ This Github provides a collection of training materials for the [Competitive Pro
 - [Techniques](techniques/README.md)
 - [Tips and Tricks](tips-and-tricks/README.md)
 - [Miscellaneous](miscellaneous/README.md)
-- [Data Structures and Algorithms (Vietnamese version: Cấu trúc dữ liệu và giải thuật)](training-topic/dsa-book.md)
+- [Data Structures and Algorithms (Vietnamese version: Tài liệu giáo khoa chuyên tin quyển 1, 2, 3)](training-topic/dsa-book.md)
 - [x] [Generate Test Cases and Check Solution](training-topic/product-gen/README.md) 
 - [x] [Subtasks Coding Template](training-topic/code-sub-task/README.md)
 
