@@ -6,7 +6,7 @@
 
 Cho 4 số nguyên $a$, $b$, $c$ và $m$. Bạn hãy tính $a^{b^c} \mod m$.
 
-Tính $ b^c \mod (m-1) $ vì theo Định Lý Euler, $ a^{b^c} \mod m = a^{(b^c \mod (m-1))} \mod m $
+Tính $b^c \mod (m-1)$ vì theo Định Lý Euler, $a^{b^c} \mod m = a^{(b^c \mod (m-1))} \mod m$
 
 Đây là một phần quan trọng trong việc tối ưu hóa phép toán với số mũ lớn trong bài toán.
 
@@ -137,7 +137,7 @@ Hàm Euler phi của một số nguyên $n$, ký hiệu là $\phi(n)$, là số 
 
 Nếu $n$ có phân tích thừa số nguyên tố:
 
-$ n = p_1^{e_1} \cdot p_2^{e_2} \cdots p_k^{e_k} $
+$n = p_1^{e_1} \cdot p_2^{e_2} \cdots p_k^{e_k}$
 
 Trong đó $p_1, p_2, \ldots, p_k$ là các số nguyên tố khác nhau, thì hàm Euler phi được tính bằng công thức:
 
