@@ -1,7 +1,3 @@
-
-
-
-
 ## I. Giải thích bài toán 
 
 Cho 4 số nguyên $a$, $b$, $c$ và $m$. Bạn hãy tính $a^{b^c} \mod m$.
@@ -14,9 +10,9 @@ Tính $b^c \mod (m-1)$ vì theo Định Lý Euler, $a^{b^c} \mod m = a^{(b^c \mo
 
 Định lý Euler là một công cụ mạnh mẽ trong lý thuyết số học, đặc biệt là khi làm việc với phép toán modulo. Định lý Euler phát biểu rằng:
 
-$$ a^{\phi(m)} \equiv 1 \ (\text{mod} \ m) $$
+$$a^{\phi(m)} \equiv 1 \ (\text{mod} \ m)$$
 
-Khi $ a $ và $ m $ là hai số nguyên tố cùng nhau (tức là $ \text{gcd}(a, m) = 1 $), với $\phi(m)$ là hàm Euler phi, được định nghĩa là số lượng số nguyên nhỏ hơn hoặc bằng $ m $ mà nguyên tố với $ m $.
+Khi $a$ và $m$ là hai số nguyên tố cùng nhau (tức là $\text{gcd}(a, m) = 1 $), với $\phi(m)$ là hàm Euler phi, được định nghĩa là số lượng số nguyên nhỏ hơn hoặc bằng $m$ mà nguyên tố với $m$.
 
 ### **2. Định Lý Euler Trong Bài Toán**
 
@@ -46,7 +42,7 @@ Vì $ b^c $ có thể rất lớn, chúng ta không thể tính toán trực ti�
 
 2. **Tính $ a^{(b^c \mod (\phi(m)))} \mod m $**:
 
-   Sau khi có giá trị $ (b^c \mod (\phi(m))) $, chúng ta tính $ a $ nâng lên lũy thừa của giá trị đó rồi tính modulo $ m $.
+   Sau khi có giá trị $ (b^c \mod (\phi(m))) $, chúng ta tính $a$ nâng lên lũy thừa của giá trị đó rồi tính modulo $m$.
 
 ### **4. Ví Dụ Minh Họa**
 
