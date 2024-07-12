@@ -223,7 +223,7 @@ def exponentiation_by_squaring(a, b, MOD):
 
 ### **6. Ví Dụ Cụ Thể**
 
-Tính $3^13 \mod 1000000007$.
+Tính $3^{13} \mod 1000000007$.
 
 - **Khởi tạo**: $result = 1$, $base = 3$.
 - **Đầu tiên**: $b = 13$ (lẻ), nên $result = (result \cdot base) \mod 1000000007$.
@@ -290,3 +290,235 @@ Phương pháp Exponentiation by Squaring giúp tính toán lũy thừa hiệu q
 - [Exponentiation by Squaring - Wikipedia](https://en.wikipedia.org/wiki/Exponentiation_by_squaring)
 - [Exponentiation by Squaring - GeeksforGeeks](https://www.geeksforgeeks.org/exponential-squaring-fast-modulo-multiplication/)
 
+
+
+### Euler's Totient Function (φ function)
+
+Euler's Totient Function, denoted as φ(n), is an important function in number theory. It counts the number of positive integers up to a given integer $n$ that are relatively prime to $n$. In other words, it measures the number of integers from 1 to $n$ that share no common factors with $n$ other than 1.
+
+#### Properties:
+1. **For a prime number $p$:**
+   $
+   \phi(p) = p - 1
+   $
+   Since all integers less than $p$ are relatively prime to $p$.
+
+2. **For the power of a prime $p^k$:**
+   $
+   \phi(p^k) = p^k - p^{k-1} = p^k \left(1 - \frac{1}{p}\right)
+   $
+   This is because there are $p^{k-1}$ multiples of $p$ up to $p^k$.
+
+3. **For two coprime numbers $a$ and $b$:**
+   $
+   \phi(a \times b) = \phi(a) \times \phi(b)
+   $
+
+4. **For any integer $n$ with prime factorization $n = p_1^{e_1} \times p_2^{e_2} \times \ldots \times p_k^{e_k}$:**
+   $
+   \phi(n) = n \left(1 - \frac{1}{p_1}\right) \left(1 - \frac{1}{p_2}\right) \ldots \left(1 - \frac{1}{p_k}\right)
+   $
+   This is derived from the multiplicative property of the totient function and the prime factorization of $n$.
+
+### Inverse Modulo
+
+The concept of an inverse modulo is tied closely to the field of modular arithmetic. Given two integers $a$ and $m$, the modular inverse of $a$ modulo $m$ is an integer $x$ such that:
+
+$
+a \times x \equiv 1 \ (\text{mod} \ m)
+$
+
+#### Properties:
+1. **Existence**: The inverse modulo $x$ exists if and only if $a$ and $m$ are coprime (i.e., $\gcd(a, m) = 1$).
+2. **Computation**: The inverse modulo can be computed using the Extended Euclidean Algorithm or Fermat's Little Theorem (for prime modulus).
+
+#### Using the Extended Euclidean Algorithm:
+The Extended Euclidean Algorithm can be used to find the inverse of $a$ modulo $m$ by solving the equation:
+$
+a \times x + m \times y = \gcd(a, m)
+$
+If $\gcd(a, m) = 1$, then $x$ is the modular inverse of $a$ modulo $m$.
+
+#### Using Fermat's Little Theorem (for prime modulus):
+If $m$ is a prime number, the inverse of $a$ modulo $m$ can be found using Fermat's Little Theorem:
+$
+a^{m-1} \equiv 1 \ (\text{mod} \ m)
+$
+Thus, the modular inverse $a^{-1} \equiv a^{m-2} \ (\text{mod} \ m)$.
+
+### Example in Python
+
+Here is how you can compute the Euler's Totient Function and the modular inverse in Python:
+
+```python
+def gcd_extended(a, b):
+    if a == 0:
+        return b, 0, 1
+    gcd, x1, y1 = gcd_extended(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
+
+def mod_inverse(a, m):
+    gcd, x, y = gcd_extended(a, m)
+    if gcd != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % m
+
+def euler_totient(n):
+    result = n
+    p = 2
+    while p * p <= n:
+        if n % p == 0:
+            while n % p == 0:
+                n //= p
+            result -= result // p
+        p += 1
+    if n > 1:
+        result -= result // n
+    return result
+
+# Example usage:
+n = 36
+print("Euler's Totient Function φ(36):", euler_totient(n))
+
+a = 3
+m = 11
+print("Modular Inverse of 3 modulo 11:", mod_inverse(a, m))
+```
+
+### Applied Example: Sum of Powers Formula
+
+In some cases, you might encounter the term involving the inverse modulo, such as:
+
+$
+S = \left(\frac{p^{e+1} - 1}{p - 1}\right) \mod MOD
+$
+
+Here, $\frac{1}{p - 1} \mod MOD$ represents the modular inverse of $p - 1$ modulo $MOD$. To compute it:
+
+```cpp
+long long term_sum = (fast_pow(p, e + 1) - 1 + MOD) % MOD * fast_pow(p - 1, MOD - 2, MOD) % MOD;
+```
+
+In this expression:
+- `fast_pow(p, e + 1)` computes $p^{e+1} \mod MOD$.
+- Subtract 1 and adjust with `MOD` to handle negative results, ensuring non-negativity.
+- Multiply by the modular inverse of $p - 1$, which is $fast_pow(p - 1, MOD - 2, MOD)$ using Fermat's Little Theorem (since $MOD$ is a prime).
+
+
+### Hàm Totient của Euler (φ function)
+
+Hàm Totient của Euler, ký hiệu là φ(n), là một hàm quan trọng trong lý thuyết số. Nó đếm số lượng số nguyên dương nhỏ hơn hoặc bằng $n$ mà cùng nguyên tố với $n$. Nói cách khác, nó đo số lượng các số từ 1 đến $n$ không chia hết cho $n$ ngoại trừ 1.
+
+#### Tính chất:
+1. **Với số nguyên tố $p$:**
+   $
+   \phi(p) = p - 1
+   $
+   Vì tất cả các số nguyên nhỏ hơn $p$ đều cùng nguyên tố với $p$.
+
+2. **Với lũy thừa của một số nguyên tố $p^k$:**
+   $
+   \phi(p^k) = p^k - p^{k-1} = p^k \left(1 - \frac{1}{p}\right)
+   $
+   Điều này là do có $p^{k-1}$ bội số của $p$ đến $p^k$.
+
+3. **Với hai số cùng nguyên tố $a$ và $b$:**
+   $
+   \phi(a \times b) = \phi(a) \times \phi(b)
+   $
+
+4. **Với bất kỳ số nguyên $n$ có phân tích số nguyên tố $n = p_1^{e_1} \times p_2^{e_2} \times \ldots \times p_k^{e_k}$:**
+   $
+   \phi(n) = n \left(1 - \frac{1}{p_1}\right) \left(1 - \frac{1}{p_2}\right) \ldots \left(1 - \frac{1}{p_k}\right)
+   $
+   Điều này được suy ra từ tính chất nhân của hàm totient và phân tích số nguyên tố của $n$.
+
+### Nghịch Đảo Đồng Dư
+
+Khái niệm nghịch đảo đồng dư gắn liền với số học đồng dư. Cho hai số nguyên $a$ và $m$, nghịch đảo đồng dư của $a$ theo modulo $m$ là một số nguyên $x$ sao cho:
+
+$
+a \times x \equiv 1 \ (\text{mod} \ m)
+$
+
+#### Tính chất:
+1. **Tồn tại**: Nghịch đảo đồng dư $x$ tồn tại khi và chỉ khi $a$ và $m$ cùng nguyên tố (tức là $\gcd(a, m) = 1$).
+2. **Tính toán**: Nghịch đảo đồng dư có thể được tính bằng Thuật toán Euclid mở rộng hoặc Định lý nhỏ Fermat (đối với số nguyên tố modulus).
+
+#### Sử dụng Thuật toán Euclid mở rộng:
+Thuật toán Euclid mở rộng có thể được sử dụng để tìm nghịch đảo của $a$ theo modulo $m$ bằng cách giải phương trình:
+$
+a \times x + m \times y = \gcd(a, m)
+$
+Nếu $\gcd(a, m) = 1$, thì $x$ là nghịch đảo đồng dư của $a$ theo modulo $m$.
+
+#### Sử dụng Định lý nhỏ Fermat (đối với số nguyên tố modulus):
+Nếu $m$ là số nguyên tố, nghịch đảo của $a$ theo modulo $m$ có thể được tìm bằng Định lý nhỏ Fermat:
+$
+a^{m-1} \equiv 1 \ (\text{mod} \ m)
+$
+Do đó, nghịch đảo đồng dư $a^{-1} \equiv a^{m-2} \ (\text{mod} \ m)$.
+
+### Ví dụ trong Python
+
+Dưới đây là cách bạn có thể tính hàm Totient của Euler và nghịch đảo đồng dư trong Python:
+
+```python
+def gcd_extended(a, b):
+    if a == 0:
+        return b, 0, 1
+    gcd, x1, y1 = gcd_extended(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
+
+def mod_inverse(a, m):
+    gcd, x, y = gcd_extended(a, m)
+    if gcd != 1:
+        raise Exception('Nghịch đảo đồng dư không tồn tại')
+    else:
+        return x % m
+
+def euler_totient(n):
+    result = n
+    p = 2
+    while p * p <= n:
+        if n % p == 0:
+            while n % p == 0:
+                n //= p
+            result -= result // p
+        p += 1
+    if n > 1:
+        result -= result // n
+    return result
+
+# Ví dụ sử dụng:
+n = 36
+print("Hàm Totient của Euler φ(36):", euler_totient(n))
+
+a = 3
+m = 11
+print("Nghịch đảo đồng dư của 3 theo modulo 11:", mod_inverse(a, m))
+```
+
+### Ví dụ Áp Dụng: Công Thức Tổng của Lũy Thừa
+
+Trong một số trường hợp, bạn có thể gặp thuật ngữ liên quan đến nghịch đảo đồng dư, chẳng hạn như:
+
+$
+S = \left(\frac{p^{e+1} - 1}{p - 1}\right) \mod MOD
+$
+
+Ở đây, $\frac{1}{p - 1} \mod MOD$ biểu thị nghịch đảo đồng dư của $p - 1$ theo modulo $MOD$. Để tính toán nó:
+
+```cpp
+long long term_sum = (fast_pow(p, e + 1) - 1 + MOD) % MOD * fast_pow(p - 1, MOD - 2, MOD) % MOD;
+```
+
+Trong biểu thức này:
+- `fast_pow(p, e + 1)` tính $p^{e+1} \mod MOD$.
+- Trừ 1 và điều chỉnh với `MOD` để xử lý kết quả âm, đảm bảo không âm.
+- Nhân với nghịch đảo đồng dư của $p - 1$, tức là $fast_pow(p - 1, MOD - 2, MOD)$ sử dụng Định lý nhỏ Fermat (vì $MOD$ là số nguyên tố).
