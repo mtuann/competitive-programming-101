@@ -35,8 +35,9 @@ ll divisorSum(ll n) {
     for (ll l = 1; l <= n;) {
         ll k = n / l;
         ll r = n / k;
+        cout << "l: " << l << " r: " << r << " k: " << k << endl;
         k %= MOD;
-
+        
         // For i=l to i=r, floor(n/i) will be k
         ans = (ans + ((sum(r) - sum(l - 1) + MOD) % MOD * k) % MOD) % MOD;
         l = r + 1;
@@ -51,3 +52,4 @@ int main() {
     std::cout << divisorSum(n) << endl;
     return 0;
 }
+// g++ -std=c++14 -o a cses1082.cpp && ./a < a.in
