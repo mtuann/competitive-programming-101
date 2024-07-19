@@ -23,7 +23,7 @@ struct Hash {
 
     Hash(char c) {
         for (int i = 0; i < NMOD; i++) {
-            value[i] = c - 'a';
+            value[i] = c;
         }
     }
 
@@ -77,10 +77,6 @@ void solve(int n, int m, char s[], char t[]) {
         ht = ht + Hash(t[i]);
         // cout << Hash(t[i]).value[0] << " ";
     }
-
-    // for (int i = 0; i < NMOD; i++) {
-    //     cout << ht.value[i] << " ";
-    // }
 
     int cur_len = 0;
     for (int i = 0; i < n; i++) {
