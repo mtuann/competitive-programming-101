@@ -2,8 +2,8 @@
 ## Finding The Maximum x Such That f(x) = true
 Let's say we have a boolean function `f(x)` that is monotonically increasing. We want to find the maximum `x` such that `f(x) = true`. We can use binary search to find this value.
 Since `f(x)` satisfies both of following conditions:
-1. `f(x) = true` for all `x` such that `x >= x0`
-2. `f(x) = false` for all `x` such that `x < x0`
+1. `f(x) = false` for all `x` such that `x > x0`
+2. `f(x) = true` for all `x` such that `x <= x0`
 ```cpp
 int binary_search(int lo, int hi) {
     while (lo < hi) {
@@ -22,8 +22,8 @@ int binary_search(int lo, int hi) {
 Let's say we have a boolean function `f(x)` that is monotonically decreasing. We want to find the minimum `x` such that `f(x) = true`. We can use binary search to find this value.
 
 Since `f(x)` satisfies both of following conditions:
-1. `f(x) = true` for all `x` such that `x <= x0`
-2. `f(x) = false` for all `x` such that `x > x0`
+1. `f(x) = false` for all `x` such that `x < x0`
+2. `f(x) = true` for all `x` such that `x >= x0`
 ```cpp
 int binary_search(int lo, int hi) {
     while (lo < hi) {
@@ -55,4 +55,18 @@ x = 4;
 int upper = upper_bound(a, a + n, x) - a;
 ```
 cout << lower << " " << upper << endl; // Output: 3 6
+
+// using vector
+vector<int> a = {1, 2, 2, 4, 4, 4, 5};
+int x = 3;
+int lower = lower_bound(a.begin(), a.end(), x) - a.begin();
+x = 4;
+int upper = upper_bound(a.begin(), a.end(), x) - a.begin();
+cout << lower << " " << upper << endl; // Output: 3 6
+// finding in range [l, r)
+int l = 1, r = 6;
+int lower = lower_bound(a.begin() + l, a.begin() + r, x) - a.begin();
+x = 4;
+int upper = upper_bound(a.begin() + l, a.begin() + r, x) - a.begin();
+cout << lower << " " << upper << endl; // Output: 3 5
 ```
