@@ -53,7 +53,6 @@ int x = 3;
 int lower = lower_bound(a, a + n, x) - a;
 x = 4;
 int upper = upper_bound(a, a + n, x) - a;
-```
 cout << lower << " " << upper << endl; // Output: 3 6
 
 // using vector
