@@ -877,6 +877,9 @@ int main() {
 }
 ```
 
+## Course Schedule (Topological Sorting)
+- https://cses.fi/problemset/task/1679
+
 ### Explanation:
 1. **Data Structures**:
     - `graph`: Adjacency list representation of the graph for the forward direction.
@@ -895,3 +898,802 @@ int main() {
 
 4. **Output**:
     - Print the minimum cost found.
+
+
+To solve the problem of finding a valid order in which to complete courses given their prerequisites, we can use the concept of **Topological Sorting**. This is a classic problem in graph theory where we need to order the nodes of a directed graph such that for every directed edge \( u \rightarrow v \), node \( u \) comes before \( v \) in the ordering.
+
+### Key Concepts:
+
+1. **Topological Sort**:
+   - Topological sorting of a directed graph is a linear ordering of its vertices such that for every directed edge \( u \rightarrow v \), vertex \( u \) comes before \( v \) in the ordering.
+   - This can be achieved using Kahn’s Algorithm (BFS-based) or Depth-First Search (DFS-based).
+
+2. **Cycle Detection**:
+   - If the graph contains a cycle, it is impossible to complete the courses as per the given prerequisites. Thus, we need to detect cycles.
+
+Given the constraints, Kahn’s Algorithm (BFS-based) is suitable due to its iterative nature and ease of understanding.
+
+### Steps:
+
+1. **Graph Representation**:
+   - Use an adjacency list to represent the graph.
+   - Maintain an in-degree array to track the number of incoming edges for each node.
+
+2. **Kahn’s Algorithm (BFS-based)**:
+   - Initialize a queue with all nodes having in-degree of 0 (i.e., no prerequisites).
+   - Process each node, reduce the in-degree of its neighbors, and if any neighbor's in-degree becomes 0, add it to the queue.
+   - Collect the nodes in the order they are processed to form the topological sort.
+
+3. **Cycle Detection**:
+   - If at the end, the number of processed nodes is less than the total number of nodes, a cycle exists, making it impossible to complete all courses.
+
+### Implementation:
+
+Here is the C++ implementation for finding a valid order or detecting if it's impossible:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+void findCourseOrder(int n, int m, vector<pair<int, int>> &edges) {
+    vector<vector<int>> graph(n + 1);
+    vector<int> in_degree(n + 1, 0);
+    
+    // Build the graph and in-degree array
+    for (auto edge : edges) {
+        int a = edge.first;
+        int b = edge.second;
+        graph[a].push_back(b);
+        in_degree[b]++;
+    }
+    
+    queue<int> q;
+    vector<int> order;
+    
+    // Add all nodes with in-degree 0 to the queue
+    for (int i = 1; i <= n; i++) {
+        if (in_degree[i] == 0) {
+            q.push(i);
+        }
+    }
+    
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        order.push_back(node);
+        
+        for (int neighbor : graph[node]) {
+            in_degree[neighbor]--;
+            if (in_degree[neighbor] == 0) {
+                q.push(neighbor);
+            }
+        }
+    }
+    
+    // If we processed all nodes, we have a valid topological order
+    if (order.size() == n) {
+        for (int course : order) {
+            cout << course << " ";
+        }
+        cout << endl;
+    } else {
+        cout << "IMPOSSIBLE" << endl;
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<pair<int, int>> edges(m);
+    
+    for (int i = 0; i < m; i++) {
+        cin >> edges[i].first >> edges[i].second;
+    }
+    
+    findCourseOrder(n, m, edges);
+    
+    return 0;
+}
+```
+
+### Explanation:
+
+1. **Graph Representation**:
+   - The graph is represented using an adjacency list where `graph[a]` contains all nodes `b` such that there is an edge \( a \rightarrow b \).
+
+2. **In-degree Array**:
+   - The in-degree array tracks the number of prerequisites for each course.
+
+3. **BFS-based Topological Sort (Kahn’s Algorithm)**:
+   - We initialize a queue with all courses having no prerequisites (in-degree 0).
+   - Process each course by reducing the in-degree of its neighbors and adding them to the queue if their in-degree becomes 0.
+   - Collect the courses in the order they are processed.
+
+4. **Cycle Detection**:
+   - If we process fewer courses than the total number, it indicates the presence of a cycle, making it impossible to complete all courses.
+
+This approach ensures that we find a valid order to complete the courses or detect if it's impossible due to cyclic dependencies.
+
+## Longest Flight Route (DAG)
+- https://cses.fi/problemset/task/1680
+
+To solve this problem, we need to find the longest path from city 1 (Syrjälä) to city n (Lehmälä) in a Directed Acyclic Graph (DAG). Since there are no cycles in the flight network, we can leverage the properties of DAGs and use dynamic programming combined with topological sorting to achieve this efficiently.
+
+### Approach:
+
+1. **Topological Sorting**:
+   - Perform a topological sort of the graph. This allows us to process the nodes in a linear order such that for any directed edge \( u \rightarrow v \), \( u \) comes before \( v \).
+
+2. **Dynamic Programming**:
+   - Use a dynamic programming array `dp` where `dp[i]` stores the maximum number of cities that can be visited starting from city 1 to city `i`.
+   - Use a `parent` array to keep track of the path taken to reconstruct the route at the end.
+
+3. **Processing Nodes**:
+   - Iterate over the nodes in the order given by the topological sort. For each node, update the `dp` values of its adjacent nodes.
+
+4. **Path Reconstruction**:
+   - After processing all nodes, reconstruct the path from city 1 to city n using the `parent` array.
+
+### Implementation:
+
+Here is the C++ implementation:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <algorithm>
+#include <queue>
+
+using namespace std;
+
+void findLongestPath(int n, int m, vector<pair<int, int>>& edges) {
+    vector<vector<int>> adj(n + 1);
+    vector<int> indegree(n + 1, 0);
+
+    // Build the adjacency list and calculate indegrees
+    for (auto edge : edges) {
+        int a = edge.first, b = edge.second;
+        adj[a].push_back(b);
+        indegree[b]++;
+    }
+
+    // Topological sort using Kahn's algorithm
+    queue<int> q;
+    for (int i = 1; i <= n; i++) {
+        if (indegree[i] == 0) {
+            q.push(i);
+        }
+    }
+
+    vector<int> topo_order;
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        topo_order.push_back(u);
+
+        for (int v : adj[u]) {
+            indegree[v]--;
+            if (indegree[v] == 0) {
+                q.push(v);
+            }
+        }
+    }
+
+    // Initialize the dp and parent arrays
+    vector<int> dp(n + 1, -1);
+    vector<int> parent(n + 1, -1);
+    dp[1] = 1;
+
+    // Process nodes in topological order
+    for (int u : topo_order) {
+        if (dp[u] != -1) {
+            for (int v : adj[u]) {
+                if (dp[u] + 1 > dp[v]) {
+                    dp[v] = dp[u] + 1;
+                    parent[v] = u;
+                }
+            }
+        }
+    }
+
+    // If there's no path to the last city
+    if (dp[n] == -1) {
+        cout << "IMPOSSIBLE" << endl;
+        return;
+    }
+
+    // Reconstruct the path from Syrjälä to Lehmälä
+    vector<int> path;
+    for (int u = n; u != -1; u = parent[u]) {
+        path.push_back(u);
+    }
+    reverse(path.begin(), path.end());
+
+    // Output the result
+    cout << dp[n] << endl;
+    for (int city : path) {
+        cout << city << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<pair<int, int>> edges(m);
+    for (int i = 0; i < m; i++) {
+        cin >> edges[i].first >> edges[i].second;
+    }
+    findLongestPath(n, m, edges);
+    return 0;
+}
+```
+
+### Explanation:
+
+1. **Graph Representation**:
+   - We represent the graph using an adjacency list.
+   - We also maintain an array to keep track of the in-degrees of nodes.
+
+2. **Topological Sort**:
+   - Using Kahn's algorithm, we perform a topological sort to process nodes in the correct order.
+
+3. **Dynamic Programming**:
+   - We use a `dp` array to store the maximum number of cities that can be visited starting from city 1 to each city.
+   - We use a `parent` array to reconstruct the path later.
+
+4. **Processing and Path Reconstruction**:
+   - We iterate over the nodes in the topological order and update the `dp` values and `parent` pointers accordingly.
+   - Finally, we reconstruct the path from city 1 to city n using the `parent` array and output the result.
+
+## Game Routes (DAG)
+- https://cses.fi/problemset/task/1681
+To solve the problem of finding the number of distinct ways to reach level \( n \) from level \( 1 \) in a directed acyclic graph (DAG), we can utilize dynamic programming combined with topological sorting. Here's a step-by-step approach:
+
+### Approach:
+
+1. **Graph Representation**:
+   - Represent the graph using an adjacency list.
+
+2. **Topological Sorting**:
+   - Perform a topological sort of the graph. This allows us to process the nodes in a linear order such that for any directed edge \( u \rightarrow v \), \( u \) comes before \( v \).
+
+3. **Dynamic Programming**:
+   - Use a dynamic programming array `dp` where `dp[i]` stores the number of distinct ways to reach level \( i \) from level 1.
+   - Initialize `dp[1] = 1` since there is one way to be at the starting level 1 (just start there).
+
+4. **Process Nodes**:
+   - Iterate over the nodes in the order given by the topological sort. For each node, update the `dp` values of its adjacent nodes.
+
+### Implementation:
+
+Here is the C++ implementation:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+const int MOD = 1e9 + 7;
+
+void findWays(int n, int m, vector<pair<int, int>>& edges) {
+    vector<vector<int>> adj(n + 1);
+    vector<int> indegree(n + 1, 0);
+
+    // Build the adjacency list and calculate indegrees
+    for (auto edge : edges) {
+        int a = edge.first, b = edge.second;
+        adj[a].push_back(b);
+        indegree[b]++;
+    }
+
+    // Topological sort using Kahn's algorithm
+    queue<int> q;
+    for (int i = 1; i <= n; i++) {
+        if (indegree[i] == 0) {
+            q.push(i);
+        }
+    }
+
+    vector<int> topo_order;
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        topo_order.push_back(u);
+
+        for (int v : adj[u]) {
+            indegree[v]--;
+            if (indegree[v] == 0) {
+                q.push(v);
+            }
+        }
+    }
+
+    // Initialize the dp array
+    vector<int> dp(n + 1, 0);
+    dp[1] = 1;
+
+    // Process nodes in topological order
+    for (int u : topo_order) {
+        for (int v : adj[u]) {
+            dp[v] = (dp[v] + dp[u]) % MOD;
+        }
+    }
+
+    // Output the number of ways to reach level n
+    cout << dp[n] << endl;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<pair<int, int>> edges(m);
+    for (int i = 0; i < m; i++) {
+        cin >> edges[i].first >> edges[i].second;
+    }
+    findWays(n, m, edges);
+    return 0;
+}
+```
+
+### Explanation:
+
+1. **Graph Representation**:
+   - We store the graph in an adjacency list `adj` and maintain an indegree array to keep track of the number of incoming edges for each node.
+
+2. **Topological Sort**:
+   - Using Kahn's algorithm, we perform a topological sort. Nodes with zero indegree are added to the queue, and we process each node by reducing the indegree of its neighbors. If a neighbor's indegree drops to zero, it's added to the queue.
+
+3. **Dynamic Programming**:
+   - We initialize `dp[1] = 1` since there's only one way to start at level 1.
+   - We iterate over each node in the topological order. For each node \( u \), we update its neighbors \( v \) by adding the number of ways to reach \( u \) (`dp[u]`) to the number of ways to reach \( v \) (`dp[v]`).
+
+4. **Output**:
+   - Finally, the value `dp[n]` gives the number of distinct ways to reach level \( n \) from level 1.
+
+## Planets Queries I (sparse table)
+- https://cses.fi/problemset/task/1750
+
+```cpp
+#include <iostream>
+#include <vector>
+using namespace std;
+
+const int MAX_L = 60; // 2^60 is larger than 10^18, suffices for k <= 10^9
+const int MOD = 1e9+7;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    int n, q;
+    cin >> n >> q;
+    
+    vector<int> teleports(n + 1);
+    for (int i = 1; i <= n; ++i) {
+        cin >> teleports[i];
+    }
+    
+    vector<vector<int>> lift(n + 1, vector<int>(MAX_L));
+    
+    // Initialize the lift table
+    for (int i = 1; i <= n; ++i) {
+        lift[i][0] = teleports[i];
+    }
+    
+    // Fill the table
+    for (int j = 1; j < MAX_L; ++j) {
+        for (int i = 1; i <= n; ++i) {
+            lift[i][j] = lift[lift[i][j-1]][j-1];
+        }
+    }
+    
+    while (q--) {
+        int x, k;
+        cin >> x >> k;
+        int current = x;
+        
+        for (int j = 0; j < MAX_L; ++j) {
+            if (k & (1LL << j)) {
+                current = lift[current][j];
+            }
+        }
+        
+        cout << current << "\n";
+    }
+    
+    return 0;
+}
+```
+
+### Explanation of the C++ Code:
+
+1. **Input Reading**:
+   - The program reads `n` (number of planets) and `q` (number of queries).
+   - The teleporter destinations are stored in a vector `teleports`.
+
+2. **Binary Lifting Table Initialization**:
+   - `lift[i][0]` is set to the destination of the teleporter from planet `i`.
+
+3. **Filling the Table**:
+   - The table is filled for powers of 2 up to `2^60` using a nested loop.
+   - Each entry `lift[i][j]` represents the planet reached after `2^j` teleports starting from planet `i`.
+
+4. **Processing Queries**:
+   - For each query, the starting planet `x` and the number of teleports `k` are read.
+   - The number of teleports `k` is decomposed into its binary form.
+   - The destination planet is determined by combining the results from the precomputed table using the relevant bits of `k`.
+
+## Road Reparation
+- https://cses.fi/problemset/task/1675
+
+To solve the problem of finding the minimum reparation cost to ensure that all cities are connected, we need to construct a Minimum Spanning Tree (MST) from the given graph. The MST will help us connect all cities with the minimum total cost.
+
+### Approach
+
+1. **Model the Problem as a Graph**:
+   - Cities are nodes.
+   - Roads are edges with weights representing the reparation costs.
+
+2. **Use Kruskal’s Algorithm**:
+   - **Step 1**: Sort all the edges based on their weights (reparation costs).
+   - **Step 2**: Use a Union-Find (Disjoint Set Union, DSU) structure to add edges to the MST while ensuring no cycles are formed.
+
+3. **Check Connectivity**:
+   - If the number of edges included in the MST is less than \(n - 1\), the graph is not fully connected, and thus, it’s impossible to connect all cities.
+
+### Detailed Steps
+
+1. **Parse Input**: Read the number of cities and roads, followed by the road details.
+2. **Sort Edges**: Sort the edges based on the reparation costs.
+3. **Union-Find Structure**:
+   - Initialize with each city as its own parent.
+   - Use path compression and union by rank to efficiently manage the connections.
+4. **Construct MST**:
+   - Add edges to the MST in the order of their costs, ensuring no cycles are created.
+5. **Output**:
+   - If all cities are connected, print the total cost of the MST.
+   - If not all cities can be connected, print "IMPOSSIBLE".
+
+Here is the C++ code implementing this approach using Kruskal’s algorithm:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct Edge {
+    int u, v, cost;
+    bool operator<(const Edge& other) const {
+        return cost < other.cost;
+    }
+};
+
+vector<int> parent, rank;
+
+int find(int x) {
+    if (parent[x] != x)
+        parent[x] = find(parent[x]);
+    return parent[x];
+}
+
+void unionSet(int x, int y) {
+    int rootX = find(x);
+    int rootY = find(y);
+
+    if (rootX != rootY) {
+        if (rank[rootX] > rank[rootY]) {
+            parent[rootY] = rootX;
+        } else if (rank[rootX] < rank[rootY]) {
+            parent[rootX] = rootY;
+        } else {
+            parent[rootY] = rootX;
+            rank[rootX]++;
+        }
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m;
+    cin >> n >> m;
+
+    vector<Edge> edges(m);
+    for (int i = 0; i < m; ++i) {
+        cin >> edges[i].u >> edges[i].v >> edges[i].cost;
+        --edges[i].u;
+        --edges[i].v;
+    }
+
+    sort(edges.begin(), edges.end());
+
+    parent.resize(n);
+    rank.resize(n, 0);
+    for (int i = 0; i < n; ++i) {
+        parent[i] = i;
+    }
+
+    long long totalCost = 0;
+    int edgeCount = 0;
+
+    for (const Edge& e : edges) {
+        int rootU = find(e.u);
+        int rootV = find(e.v);
+
+        if (rootU != rootV) {
+            unionSet(rootU, rootV);
+            totalCost += e.cost;
+            edgeCount++;
+        }
+
+        if (edgeCount == n - 1) {
+            break;
+        }
+    }
+
+    if (edgeCount == n - 1) {
+        cout << totalCost << "\n";
+    } else {
+        cout << "IMPOSSIBLE\n";
+    }
+
+    return 0;
+}
+```
+
+### Explanation of the Code
+
+1. **Edge Structure**:
+   - Holds information about each edge: its endpoints and cost.
+
+2. **Union-Find Functions**:
+   - `find`: Finds the root of a set and applies path compression.
+   - `unionSet`: Merges two sets and uses union by rank.
+
+3. **Main Function**:
+   - Reads input and initializes the Union-Find structure.
+   - Sorts edges and processes them to build the MST while keeping track of the total cost.
+   - Checks if a valid MST is constructed and prints the result.
+
+## Planets and Kingdoms
+- https://cses.fi/problemset/task/1682
+
+To solve the problem of determining the kingdoms in the game, where a kingdom is defined by strongly connected components (SCCs) in a directed graph, we need to identify SCCs. Each SCC is a maximal subgraph where every vertex is reachable from every other vertex in the same SCC.
+
+Here’s a step-by-step approach using Kosaraju’s algorithm, which is efficient for finding SCCs in \(O(n + m)\) time complexity.
+
+### Steps Using Kosaraju’s Algorithm
+
+1. **Perform a DFS to Determine Finish Times**:
+   - Traverse the graph and record the finishing times of each vertex.
+   
+2. **Reverse the Graph**:
+   - Reverse the direction of all edges in the graph.
+
+3. **Perform DFS on the Reversed Graph**:
+   - Process nodes in the order of decreasing finish times from the first DFS. Each DFS tree in the reversed graph represents an SCC.
+
+4. **Assign Kingdom Labels**:
+   - Each SCC corresponds to a unique kingdom.
+
+### C++ Implementation
+
+Here’s a C++ implementation of the above approach:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <algorithm>
+
+using namespace std;
+
+const int MAXN = 100000;
+vector<int> graph[MAXN], reverseGraph[MAXN];
+vector<int> scc[MAXN];
+bool visited[MAXN];
+stack<int> nodesStack;
+int component[MAXN];
+int n, m;
+
+void dfs1(int u) {
+    visited[u] = true;
+    for (int v : graph[u]) {
+        if (!visited[v]) {
+            dfs1(v);
+        }
+    }
+    nodesStack.push(u);
+}
+
+void dfs2(int u, int comp) {
+    visited[u] = true;
+    component[u] = comp;
+    scc[comp].push_back(u);
+    for (int v : reverseGraph[u]) {
+        if (!visited[v]) {
+            dfs2(v, comp);
+        }
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    cin >> n >> m;
+
+    for (int i = 0; i < m; ++i) {
+        int a, b;
+        cin >> a >> b;
+        --a; --b; // Convert to 0-based indexing
+        graph[a].push_back(b);
+        reverseGraph[b].push_back(a);
+    }
+
+    // Step 1: Perform DFS to get finishing times
+    fill(visited, visited + n, false);
+    for (int i = 0; i < n; ++i) {
+        if (!visited[i]) {
+            dfs1(i);
+        }
+    }
+
+    // Step 2: Reverse DFS using finish times to find SCCs
+    fill(visited, visited + n, false);
+    int compCount = 0;
+    while (!nodesStack.empty()) {
+        int u = nodesStack.top();
+        nodesStack.pop();
+        if (!visited[u]) {
+            dfs2(u, compCount++);
+        }
+    }
+
+    // Output results
+    cout << compCount << endl;
+    for (int i = 0; i < n; ++i) {
+        cout << component[i] + 1 << " "; // Convert back to 1-based indexing
+    }
+    cout << endl;
+
+    return 0;
+}
+```
+
+### Explanation:
+
+1. **Graph and Reverse Graph Construction**:
+   - Read input and build the graph and its reversed version.
+
+2. **First DFS**:
+   - Traverse the original graph to determine the finishing times of nodes.
+
+3. **Reverse DFS**:
+   - Using the reversed graph, perform DFS in the order of decreasing finish times to discover SCCs.
+
+4. **Output**:
+   - Print the number of SCCs (kingdoms) and the kingdom label for each planet.
+
+### Complexity:
+- **Time Complexity**: \(O(n + m)\) due to the two DFS traversals.
+- **Space Complexity**: \(O(n + m)\) for storing the graph and auxiliary data structures.
+
+This approach ensures that we efficiently determine the number of kingdoms and assign labels to each planet according to their respective kingdoms.
+
+Tarjan's algorithm is another efficient method for finding Strongly Connected Components (SCCs) in a directed graph. It operates in \(O(n + m)\) time complexity, making it suitable for large graphs. The algorithm uses a single DFS traversal and maintains indices and low-link values to determine SCCs.
+
+Here is a C++ implementation of Tarjan's algorithm to solve the problem:
+
+### C++ Code for Tarjan's Algorithm
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <algorithm>
+
+using namespace std;
+
+const int MAXN = 100000;
+vector<int> graph[MAXN];
+vector<int> scc[MAXN];
+bool inStack[MAXN];
+int index[MAXN], lowlink[MAXN], component[MAXN];
+stack<int> nodeStack;
+int indexCounter = 0, sccCount = 0;
+int n, m;
+
+void tarjan(int u) {
+    index[u] = lowlink[u] = indexCounter++;
+    nodeStack.push(u);
+    inStack[u] = true;
+
+    for (int v : graph[u]) {
+        if (index[v] == -1) {
+            // v has not been visited
+            tarjan(v);
+            lowlink[u] = min(lowlink[u], lowlink[v]);
+        } else if (inStack[v]) {
+            // v is in the stack (part of the current SCC)
+            lowlink[u] = min(lowlink[u], index[v]);
+        }
+    }
+
+    // If u is a root node, pop the stack and generate an SCC
+    if (lowlink[u] == index[u]) {
+        vector<int> currentSCC;
+        int v;
+        do {
+            v = nodeStack.top();
+            nodeStack.pop();
+            inStack[v] = false;
+            component[v] = sccCount;
+            currentSCC.push_back(v);
+        } while (v != u);
+        scc[sccCount++] = currentSCC;
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    cin >> n >> m;
+
+    for (int i = 0; i < m; ++i) {
+        int a, b;
+        cin >> a >> b;
+        --a; --b; // Convert to 0-based indexing
+        graph[a].push_back(b);
+    }
+
+    fill(index, index + n, -1); // Initialize all indices to -1
+    fill(lowlink, lowlink + n, -1); // Initialize all lowlink values to -1
+
+    for (int i = 0; i < n; ++i) {
+        if (index[i] == -1) {
+            tarjan(i);
+        }
+    }
+
+    // Output results
+    cout << sccCount << endl;
+    for (int i = 0; i < n; ++i) {
+        cout << component[i] + 1 << " "; // Convert back to 1-based indexing
+    }
+    cout << endl;
+
+    return 0;
+}
+```
+
+### Explanation
+
+1. **Initialization**:
+   - **Graph Representation**: Read the graph and construct adjacency lists.
+   - **Arrays**: Initialize `index` and `lowlink` arrays to `-1`, and use a stack to keep track of nodes in the current SCC.
+   - **`inStack`**: A boolean array to check if a node is currently in the stack.
+
+2. **Tarjan's Algorithm**:
+   - **DFS Traversal**: For each unvisited node, perform a DFS to assign `index` and `lowlink` values.
+   - **Stack Operations**: If a node `u` is the root of an SCC (i.e., `lowlink[u] == index[u]`), pop nodes from the stack until `u` is reached, forming one SCC.
+
+3. **Output**:
+   - **SCC Count**: The number of SCCs found.
+   - **Component Labels**: Each node is assigned a kingdom label based on its SCC.
+
+### Complexity:
+- **Time Complexity**: \(O(n + m)\) because each node and edge is processed once.
+- **Space Complexity**: \(O(n + m)\) for storing graph structures and auxiliary data.
+
+Tarjan's algorithm is well-suited for problems involving the detection of SCCs and is particularly effective for large-scale graphs due to its efficiency.
