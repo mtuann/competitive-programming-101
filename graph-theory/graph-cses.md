@@ -1697,3 +1697,619 @@ int main() {
 - **Space Complexity**: \(O(n + m)\) for storing graph structures and auxiliary data.
 
 Tarjan's algorithm is well-suited for problems involving the detection of SCCs and is particularly effective for large-scale graphs due to its efficiency.
+
+## [1686 - Coin Collector](https://cses.fi/problemset/task/1686)
+
+To solve this problem using Tarjan's algorithm to find Strongly Connected Components (SCCs) and then performing a topological sort on the condensed graph, follow these steps:
+
+1. Use Tarjan's algorithm to find all SCCs in the graph.
+2. Condense the graph where each SCC is a single node.
+3. Perform a topological sort on the condensed graph.
+4. Use dynamic programming on the topologically sorted condensed graph to find the maximum number of coins collectable.
+
+Here's the C++ code implementing this approach:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <stack>
+#include <algorithm>
+#include <limits.h>
+
+using namespace std;
+
+const int MAXN = 100000;
+vector<int> adj[MAXN + 1];
+vector<int> adj_scc[MAXN + 1];
+int coins[MAXN + 1];
+long long scc_coins[MAXN + 1];
+int scc_id[MAXN + 1];
+int scc_indegree[MAXN + 1];
+bool on_stack[MAXN + 1];
+int low[MAXN + 1], disc[MAXN + 1];
+int scc_counter, time_counter;
+stack<int> stk;
+
+void tarjan(int u) {
+    static int time = 0;
+    low[u] = disc[u] = ++time;
+    stk.push(u);
+    on_stack[u] = true;
+
+    for (int v : adj[u]) {
+        if (disc[v] == -1) {
+            tarjan(v);
+            low[u] = min(low[u], low[v]);
+        } else if (on_stack[v]) {
+            low[u] = min(low[u], disc[v]);
+        }
+    }
+
+    if (low[u] == disc[u]) {
+        while (true) {
+            int v = stk.top();
+            stk.pop();
+            on_stack[v] = false;
+            scc_id[v] = scc_counter;
+            scc_coins[scc_counter] += coins[v];
+            if (u == v) break;
+        }
+        scc_counter++;
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    
+    for (int i = 1; i <= n; i++) {
+        cin >> coins[i];
+    }
+
+    for (int i = 0; i < m; i++) {
+        int a, b;
+        cin >> a >> b;
+        adj[a].push_back(b);
+    }
+
+    // Initialize Tarjan's algorithm variables
+    fill(disc, disc + n + 1, -1);
+    fill(low, low + n + 1, -1);
+    fill(scc_coins, scc_coins + n + 1, 0);
+    scc_counter = time_counter = 0;
+
+    // Find all SCCs
+    for (int i = 1; i <= n; i++) {
+        if (disc[i] == -1) {
+            tarjan(i);
+        }
+    }
+
+    // Build the condensed graph
+    for (int u = 1; u <= n; u++) {
+        for (int v : adj[u]) {
+            if (scc_id[u] != scc_id[v]) {
+                adj_scc[scc_id[u]].push_back(scc_id[v]);
+                scc_indegree[scc_id[v]]++;
+            }
+        }
+    }
+
+    // Topological sort on the condensed graph
+    vector<int> topo_order;
+    vector<long long> dp(scc_counter, 0);
+
+    for (int i = 0; i < scc_counter; i++) {
+        if (scc_indegree[i] == 0) {
+            topo_order.push_back(i);
+        }
+    }
+
+    for (int i = 0; i < (int)topo_order.size(); i++) {
+        int u = topo_order[i];
+        for (int v : adj_scc[u]) {
+            if (--scc_indegree[v] == 0) {
+                topo_order.push_back(v);
+            }
+        }
+    }
+
+    // Dynamic programming to find the maximum coins collectible
+    long long max_coins = 0;
+    for (int u : topo_order) {
+        dp[u] += scc_coins[u];
+        max_coins = max(max_coins, dp[u]);
+        for (int v : adj_scc[u]) {
+            dp[v] = max(dp[v], dp[u]);
+        }
+    }
+
+    cout << max_coins << endl;
+
+    return 0;
+}
+```
+
+### Explanation:
+1. **Tarjan's Algorithm**: This part finds all SCCs in the graph. Each SCC is assigned a unique ID, and we keep track of the sum of coins in each SCC.
+2. **Condensed Graph**: We create a new graph where each SCC is a single node. Edges between SCCs are added based on the original graph.
+3. **Topological Sort**: We perform a topological sort on the condensed graph using Kahn's algorithm.
+4. **Dynamic Programming**: We use a DP array where `dp[i]` represents the maximum coins collectible if the path ends at SCC `i`. We update the DP values as we process each SCC in topological order and keep track of the maximum coins collected so far.
+
+This approach ensures that we efficiently find the maximum number of coins collectible, considering the constraints and ensuring all SCCs are accounted for.
+
+
+## [1694 - Download Speed (Maximum Flow)](https://cses.fi/problemset/task/1694)
+
+To solve the problem of finding the maximum speed Kotivalo can download data from the server, we can model it as a maximum flow problem. The Ford-Fulkerson algorithm with the Edmonds-Karp implementation, which uses breadth-first search (BFS) for finding augmenting paths, is suitable for this task given the constraints.
+
+Here's the C++ code to solve the problem:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std;
+
+const int MAXN = 500;
+const int INF = INT_MAX;
+
+vector<pair<int, int>> adj[MAXN + 1]; // adjacency list
+int capacity[MAXN + 1][MAXN + 1];     // capacity matrix
+int parent[MAXN + 1];                 // parent array for storing the path
+
+// BFS to find an augmenting path
+bool bfs(int source, int sink) {
+    memset(parent, -1, sizeof(parent));
+    parent[source] = source;
+    queue<pair<int, int>> q;
+    q.push({source, INF});
+    
+    while (!q.empty()) {
+        int curr = q.front().first;
+        int flow = q.front().second;
+        q.pop();
+        
+        for (auto next : adj[curr]) {
+            int next_node = next.first;
+            int cap = next.second;
+            
+            if (parent[next_node] == -1 && capacity[curr][next_node] > 0) {
+                parent[next_node] = curr;
+                int new_flow = min(flow, capacity[curr][next_node]);
+                if (next_node == sink)
+                    return new_flow;
+                q.push({next_node, new_flow});
+            }
+        }
+    }
+    
+    return 0;
+}
+
+// Edmonds-Karp implementation of the Ford-Fulkerson method
+int edmonds_karp(int source, int sink) {
+    int flow = 0;
+    int new_flow;
+    
+    while (new_flow = bfs(source, sink)) {
+        flow += new_flow;
+        int curr = sink;
+        while (curr != source) {
+            int prev = parent[curr];
+            capacity[prev][curr] -= new_flow;
+            capacity[curr][prev] += new_flow;
+            curr = prev;
+        }
+    }
+    
+    return flow;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    
+    memset(capacity, 0, sizeof(capacity));
+    
+    for (int i = 0; i < m; i++) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        adj[a].push_back({b, c});
+        adj[b].push_back({a, 0}); // reverse edge with 0 initial capacity
+        capacity[a][b] += c; // in case of multiple edges, add the capacities
+    }
+    
+    int source = 1;
+    int sink = n;
+    cout << edmonds_karp(source, sink) << endl;
+    
+    return 0;
+}
+```
+
+### Explanation:
+
+1. **Input Reading**: The code first reads the number of computers (`n`) and connections (`m`). It then reads the connections, building the adjacency list and capacity matrix accordingly.
+
+2. **Capacity Matrix**: The `capacity` matrix is used to store the capacities of the edges between nodes. For every connection, the corresponding capacities are updated. If there are multiple connections between the same nodes, their capacities are added.
+
+3. **BFS for Augmenting Path**: The BFS function is used to find an augmenting path from the source (server) to the sink (Kotivalo's computer). It returns the flow possible through that path.
+
+4. **Edmonds-Karp Algorithm**: This is the main function that implements the Ford-Fulkerson method using BFS to find the maximum flow. It repeatedly finds augmenting paths and updates the capacities until no more augmenting paths can be found.
+
+5. **Output**: Finally, the maximum flow from the server to Kotivalo's computer is printed, which represents the maximum speed Kotivalo can download data.
+
+This approach efficiently handles the constraints provided in the problem statement and correctly computes the maximum data transfer speed using the given connections.
+
+To improve the efficiency of the maximum flow algorithm, we can use the Dinic's algorithm, which is more efficient for larger graphs. Dinic's algorithm uses BFS to build a level graph and DFS to find augmenting paths. This can significantly reduce the time complexity for certain types of graphs.
+
+Here's the C++ code implementing Dinic's algorithm:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+#include <cstring>
+
+using namespace std;
+
+const int MAXN = 500;
+const int INF = INT_MAX;
+
+struct Edge {
+    int to, capacity, flow, reverse_index;
+};
+
+vector<Edge> adj[MAXN + 1];
+int level[MAXN + 1];
+int start[MAXN + 1];
+
+// Add edge to the graph
+void add_edge(int u, int v, int capacity) {
+    adj[u].push_back({v, capacity, 0, (int)adj[v].size()});
+    adj[v].push_back({u, 0, 0, (int)adj[u].size() - 1});
+}
+
+// BFS to build level graph
+bool bfs(int source, int sink) {
+    memset(level, -1, sizeof(level));
+    level[source] = 0;
+    queue<int> q;
+    q.push(source);
+    
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        
+        for (const auto& edge : adj[u]) {
+            if (level[edge.to] < 0 && edge.flow < edge.capacity) {
+                level[edge.to] = level[u] + 1;
+                q.push(edge.to);
+            }
+        }
+    }
+    return level[sink] >= 0;
+}
+
+// DFS to send flow along augmenting paths
+int dfs(int u, int sink, int flow) {
+    if (u == sink) return flow;
+    
+    for (; start[u] < adj[u].size(); start[u]++) {
+        Edge& edge = adj[u][start[u]];
+        
+        if (level[edge.to] == level[u] + 1 && edge.flow < edge.capacity) {
+            int curr_flow = min(flow, edge.capacity - edge.flow);
+            int temp_flow = dfs(edge.to, sink, curr_flow);
+            
+            if (temp_flow > 0) {
+                edge.flow += temp_flow;
+                adj[edge.to][edge.reverse_index].flow -= temp_flow;
+                return temp_flow;
+            }
+        }
+    }
+    return 0;
+}
+
+// Dinic's algorithm to find maximum flow
+int dinic(int source, int sink) {
+    int max_flow = 0;
+    
+    while (bfs(source, sink)) {
+        memset(start, 0, sizeof(start));
+        
+        while (int flow = dfs(source, sink, INF)) {
+            max_flow += flow;
+        }
+    }
+    return max_flow;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    
+    for (int i = 0; i < m; i++) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        add_edge(a, b, c);
+    }
+    
+    int source = 1;
+    int sink = n;
+    cout << dinic(source, sink) << endl;
+    
+    return 0;
+}
+```
+
+### Explanation:
+
+1. **Edge Structure**: An edge structure stores information about the destination node (`to`), the capacity of the edge (`capacity`), the current flow through the edge (`flow`), and the index of the reverse edge in the adjacency list of the destination node (`reverse_index`).
+
+2. **Adding Edges**: The `add_edge` function adds both the forward and reverse edges to the adjacency list. The reverse edge initially has a capacity of 0.
+
+3. **Level Graph with BFS**: The `bfs` function constructs the level graph by performing a breadth-first search from the source node. It assigns levels to nodes which represent the shortest distance from the source node.
+
+4. **Finding Augmenting Paths with DFS**: The `dfs` function attempts to find augmenting paths in the level graph. It sends as much flow as possible through these paths.
+
+5. **Dinic's Algorithm**: The `dinic` function repeatedly builds the level graph and finds augmenting paths until no more augmenting paths can be found. The sum of all the flows sent through the augmenting paths gives the maximum flow from the source to the sink.
+
+6. **Input and Output**: The main function reads the input, constructs the graph, and computes the maximum flow from the server (node 1) to Kotivalo's computer (node `n`), printing the result.
+
+Dinic's algorithm is significantly faster than the Edmonds-Karp implementation of the Ford-Fulkerson method, especially for larger graphs, and should handle the given constraints efficiently.
+
+## [1696 - School Dance (Maximum Matching)](https://cses.fi/problemset/task/1696)
+To solve this problem, we need to find the maximum matching in a bipartite graph where one partition represents boys and the other represents girls, with edges between nodes representing potential dance pairs. The problem can be efficiently solved using the Hopcroft-Karp algorithm, which finds the maximum matching in a bipartite graph.
+
+Here’s the C++ code to implement this:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <cstring>
+
+using namespace std;
+
+const int MAXN = 500;
+
+vector<int> adj[MAXN + 1];
+int pairU[MAXN + 1], pairV[MAXN + 1];
+int dist[MAXN + 1];
+int n, m;
+
+bool bfs() {
+    queue<int> Q;
+    for (int u = 1; u <= n; u++) {
+        if (pairU[u] == 0) {
+            dist[u] = 0;
+            Q.push(u);
+        } else {
+            dist[u] = INT_MAX;
+        }
+    }
+    dist[0] = INT_MAX;
+
+    while (!Q.empty()) {
+        int u = Q.front();
+        Q.pop();
+
+        if (dist[u] < dist[0]) {
+            for (int v : adj[u]) {
+                if (dist[pairV[v]] == INT_MAX) {
+                    dist[pairV[v]] = dist[u] + 1;
+                    Q.push(pairV[v]);
+                }
+            }
+        }
+    }
+    return dist[0] != INT_MAX;
+}
+
+bool dfs(int u) {
+    if (u != 0) {
+        for (int v : adj[u]) {
+            if (dist[pairV[v]] == dist[u] + 1) {
+                if (dfs(pairV[v])) {
+                    pairV[v] = u;
+                    pairU[u] = v;
+                    return true;
+                }
+            }
+        }
+        dist[u] = INT_MAX;
+        return false;
+    }
+    return true;
+}
+
+int hopcroft_karp() {
+    memset(pairU, 0, sizeof(pairU));
+    memset(pairV, 0, sizeof(pairV));
+    memset(dist, 0, sizeof(dist));
+
+    int matching = 0;
+    while (bfs()) {
+        for (int u = 1; u <= n; u++) {
+            if (pairU[u] == 0 && dfs(u)) {
+                matching++;
+            }
+        }
+    }
+    return matching;
+}
+
+int main() {
+    int k;
+    cin >> n >> m >> k;
+
+    for (int i = 0; i < k; i++) {
+        int a, b;
+        cin >> a >> b;
+        adj[a].push_back(b);
+    }
+
+    int max_matching = hopcroft_karp();
+    cout << max_matching << endl;
+
+    for (int u = 1; u <= n; u++) {
+        if (pairU[u] != 0) {
+            cout << u << " " << pairU[u] << endl;
+        }
+    }
+
+    return 0;
+}
+```
+
+### Explanation:
+1. **Graph Representation**: The adjacency list `adj` represents the bipartite graph where `adj[a]` contains the girls that boy `a` is willing to dance with.
+
+2. **Matching Arrays**: `pairU` and `pairV` store the matched pairs for boys and girls, respectively. `pairU[u]` is the girl matched with boy `u` and `pairV[v]` is the boy matched with girl `v`.
+
+3. **Distance Array**: `dist` is used in the BFS to store distances from free boys to unmatched girls.
+
+4. **BFS Function**: The BFS function builds the level graph and sets the distances. It returns true if there is an augmenting path from a free boy to a free girl.
+
+5. **DFS Function**: The DFS function attempts to find an augmenting path and updates the matching.
+
+6. **Hopcroft-Karp Algorithm**: The main function `hopcroft_karp` repeatedly calls BFS to find the level graph and then DFS to find augmenting paths, increasing the matching size.
+
+7. **Main Function**: Reads the input and builds the graph, then calls `hopcroft_karp` to find the maximum matching and outputs the result along with the pairs.
+
+This approach efficiently finds the maximum number of dance pairs and prints a valid solution within the given constraints.
+
+## [1695 - Police Chase](https://cses.fi/problemset/task/1695)
+To solve this problem, we need to find the minimum number of edges (streets) to remove to disconnect the bank (node 1) from the harbor (node n). This is essentially a minimum cut problem in the context of a flow network, which can be solved using the Max-Flow Min-Cut theorem.
+
+Here’s a step-by-step approach using the Edmonds-Karp algorithm for finding the maximum flow, which will also give us the minimum cut:
+
+1. **Construct a Flow Network**: Treat the crossings as nodes and streets as edges with unit capacity.
+2. **Apply the Max-Flow Algorithm**: Use the Edmonds-Karp implementation of the Ford-Fulkerson method to find the maximum flow from the source (bank) to the sink (harbor).
+3. **Find the Minimum Cut**: Once the maximum flow is found, identify the minimum cut by checking which edges cross from reachable nodes to non-reachable nodes in the residual graph.
+
+Here's the C++ code to solve the problem:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <cstring>
+
+using namespace std;
+
+const int MAXN = 500;
+const int INF = 1e9;
+
+vector<int> adj[MAXN + 1];
+int capacity[MAXN + 1][MAXN + 1];
+int parent[MAXN + 1];
+
+bool bfs(int source, int sink) {
+    memset(parent, -1, sizeof(parent));
+    queue<pair<int, int>> q;
+    q.push({source, INF});
+    
+    while (!q.empty()) {
+        int curr = q.front().first;
+        int flow = q.front().second;
+        q.pop();
+        
+        for (int next : adj[curr]) {
+            if (parent[next] == -1 && capacity[curr][next]) {
+                parent[next] = curr;
+                int new_flow = min(flow, capacity[curr][next]);
+                if (next == sink) return true;
+                q.push({next, new_flow});
+            }
+        }
+    }
+    return false;
+}
+
+int edmonds_karp(int source, int sink) {
+    int max_flow = 0;
+    while (bfs(source, sink)) {
+        int flow = INF;
+        for (int curr = sink; curr != source; curr = parent[curr]) {
+            int prev = parent[curr];
+            flow = min(flow, capacity[prev][curr]);
+        }
+        for (int curr = sink; curr != source; curr = parent[curr]) {
+            int prev = parent[curr];
+            capacity[prev][curr] -= flow;
+            capacity[curr][prev] += flow;
+        }
+        max_flow += flow;
+    }
+    return max_flow;
+}
+
+void dfs(int u, vector<bool>& visited) {
+    visited[u] = true;
+    for (int v : adj[u]) {
+        if (!visited[v] && capacity[u][v] > 0) {
+            dfs(v, visited);
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    
+    for (int i = 0; i < m; i++) {
+        int a, b;
+        cin >> a >> b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+        capacity[a][b] = 1;  // Unit capacity for each edge
+        capacity[b][a] = 1;  // Since the streets are two-way
+    }
+    
+    int source = 1;
+    int sink = n;
+    
+    int max_flow = edmonds_karp(source, sink);
+    
+    vector<bool> visited(n + 1, false);
+    dfs(source, visited);
+    
+    vector<pair<int, int>> min_cut_edges;
+    for (int u = 1; u <= n; u++) {
+        if (visited[u]) {
+            for (int v : adj[u]) {
+                if (!visited[v] && capacity[u][v] == 0) {
+                    min_cut_edges.push_back({u, v});
+                }
+            }
+        }
+    }
+    
+    cout << min_cut_edges.size() << endl;
+    for (auto edge : min_cut_edges) {
+        cout << edge.first << " " << edge.second << endl;
+    }
+    
+    return 0;
+}
+```
+
+### Explanation:
+
+1. **Graph Construction**: The adjacency list and capacity matrix are built from the input. Each edge is given a unit capacity because we only care about the number of edges, not their capacities.
+  
+2. **Edmonds-Karp Algorithm**: This is used to find the maximum flow from the bank to the harbor. It uses BFS to find augmenting paths.
+
+3. **Finding the Minimum Cut**: After computing the maximum flow, a DFS is performed from the source to mark all reachable nodes. The minimum cut edges are those that cross from reachable nodes to non-reachable nodes in the residual graph.
+
+4. **Output**: The number of edges in the minimum cut and the edges themselves are printed.
+
+This approach ensures that the solution is efficient and within the constraints, providing the minimum number of streets to close to block the route from the bank to the harbor.
