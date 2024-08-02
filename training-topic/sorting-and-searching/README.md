@@ -1742,3 +1742,103 @@ int main() {
    - Print the minimum possible value of the maximum sum in the optimal division.
 
 This approach efficiently handles large arrays due to the \( O(n \log(\text{sum})) \) complexity, where `sum` is the sum of all array elements.
+
+# [2428 - Subarray Distinct Values](https://cses.fi/problemset/task/2428)
+To solve the problem of counting the number of subarrays with at most \( k \) distinct values efficiently, we can use the sliding window technique with two pointers. This approach helps to dynamically maintain the count of distinct values in the current window while iterating through the array.
+
+### Approach
+
+1. **Sliding Window with Two Pointers**:
+   - Use two pointers to maintain a window of subarrays.
+   - Expand the right end of the window to include new elements.
+   - When the window contains more than \( k \) distinct elements, move the left end to reduce the number of distinct elements.
+   - Count the valid subarrays formed by the current window.
+
+2. **Hash Map to Track Frequencies**:
+   - Use a hash map (or dictionary) to keep track of the frequency of each element in the current window.
+
+3. **Counting Valid Subarrays**:
+   - For each position of the right pointer, add the number of valid subarrays ending at that position.
+
+### Detailed Steps
+
+1. Initialize two pointers: `left` and `right`, both starting at the beginning of the array.
+2. Use a hash map to count the frequency of elements in the current window.
+3. Expand the window by moving the `right` pointer and updating the hash map.
+4. If the window has more than \( k \) distinct elements, move the `left` pointer to reduce the number of distinct elements.
+5. For each position of the `right` pointer, count the number of valid subarrays that end at `right`.
+
+### Implementation in C++
+
+Here's the implementation of the approach described:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+int countSubarraysWithAtMostKDistinct(const vector<int>& arr, int k) {
+    int n = arr.size();
+    unordered_map<int, int> freq;
+    int left = 0, right = 0;
+    int count = 0;
+    int distinct = 0;
+
+    while (right < n) {
+        // Expand the window by adding arr[right]
+        if (freq[arr[right]] == 0) {
+            distinct++;
+        }
+        freq[arr[right]]++;
+        right++;
+
+        // Shrink the window from the left if it has more than k distinct elements
+        while (distinct > k) {
+            if (--freq[arr[left]] == 0) {
+                distinct--;
+            }
+            left++;
+        }
+
+        // Add the number of valid subarrays ending at 'right - 1'
+        count += (right - left);
+    }
+
+    return count;
+}
+
+int main() {
+    int n, k;
+    cin >> n >> k;
+    
+    vector<int> arr(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> arr[i];
+    }
+    
+    int result = countSubarraysWithAtMostKDistinct(arr, k);
+    cout << result << endl;
+
+    return 0;
+}
+```
+
+### Explanation
+
+1. **Initialization**:
+   - `left` and `right` pointers start at the beginning of the array.
+   - `freq` is a hash map to keep track of the frequency of elements in the current window.
+   - `count` keeps the total number of valid subarrays.
+   - `distinct` tracks the number of distinct elements in the current window.
+
+2. **Sliding Window**:
+   - Expand the window by moving the `right` pointer and updating the frequency count of the current element.
+   - If adding a new element increases the distinct count beyond \( k \), move the `left` pointer to shrink the window until it has at most \( k \) distinct elements.
+   - For each position of the `right` pointer, the number of valid subarrays ending at `right - 1` is added to `count`. These are the subarrays starting from `left` to `right-1`.
+
+3. **Output**:
+   - Print the total count of valid subarrays.
+
+This approach ensures that each element is processed at most twice, leading to an \( O(n) \) time complexity, which is efficient given the problem constraints.
