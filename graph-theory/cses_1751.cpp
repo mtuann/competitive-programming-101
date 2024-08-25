@@ -1,78 +1,63 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
-#include <algorithm>
 
 using namespace std;
 
-const int MAXN = 200000;
-vector<int> teleporter(MAXN);
-vector<int> result(MAXN, 0);
-vector<int> visited(MAXN, -1);
-vector<int> steps(MAXN, -1);
+void findTeleportationCounts(int n, vector<int>& teleporters) {
+    vector<int> result(n, 0);
+    vector<int> visited(n, -1);
 
-void dfs(int start) {
-    int current = start;
-    int count = 0;
-    vector<int> path;
-
-    while (true) {
-        if (visited[current] == start) {
-            // Found a cycle
-            int cycle_start = find(path.begin(), path.end(), current) - path.begin();
-            int cycle_length = count - cycle_start;
-            for (int node : path) {
-                if (find(path.begin(), path.end(), node) >= path.begin() + cycle_start) {
-                    result[node] = cycle_length;
-                }
-            }
-            break;
+    for (int i = 0; i < n; i++) {
+        if (result[i] != 0) {
+            continue;  // If this planet already has a calculated result, skip it.
         }
-        if (visited[current] != -1) {
-            // Reached a node already processed in a different path
-            if (visited[current] == start) {
-                // We are revisiting a node in the current path
-                int cycle_start = find(path.begin(), path.end(), current) - path.begin();
-                int cycle_length = count - cycle_start;
-                for (int node : path) {
-                    if (find(path.begin(), path.end(), node) >= path.begin() + cycle_start) {
-                        result[node] = cycle_length;
-                    }
-                }
-            }
-            break;
+        cout << "Starting from planet " << i << endl;
+        vector<int> path;  // Stores the current path of teleportations.
+        int current = i;
+        
+        while (visited[current] == -1) {
+            visited[current] = path.size();
+            path.push_back(current);
+            current = teleporters[current] - 1;
+        }
+        // print the path
+        for (int j = 0; j < path.size(); j++) {
+            cout << path[j] << " ";
+        }
+        cout << endl;
+
+        int loop_start = visited[current];
+        int loop_length = path.size() - loop_start;
+
+        // Assign loop length to all planets in the loop.
+        for (int j = loop_start; j < path.size(); j++) {
+            result[path[j]] = loop_length;
         }
 
-        // Continue traversal
-        visited[current] = start;
-        path.push_back(current);
-        steps[current] = count;
-        count++;
-        current = teleporter[current] - 1;
+        // Calculate the number of teleportations for planets before entering the loop.
+        for (int j = 0; j < loop_start; j++) {
+            result[path[j]] = loop_length + (loop_start - j);
+        }
     }
+
+    // Output the results
+    for (int i = 0; i < n; i++) {
+        cout << result[i] << " ";
+    }
+    cout << endl;
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
     int n;
     cin >> n;
-
-    for (int i = 0; i < n; ++i) {
-        cin >> teleporter[i];
+    
+    vector<int> teleporters(n);
+    for (int i = 0; i < n; i++) {
+        cin >> teleporters[i];
     }
-
-    for (int i = 0; i < n; ++i) {
-        if (visited[i] == -1) {
-            dfs(i);
-        }
-    }
-
-    for (int i = 0; i < n; ++i) {
-        cout << result[i] << ' ';
-    }
-    cout << '\n';
+    
+    findTeleportationCounts(n, teleporters);
 
     return 0;
 }
+// g++ -std=c++17 -O2 -Wall cses_1751.cpp -o a && ./a < a.in

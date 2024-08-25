@@ -46,25 +46,33 @@ namespace sub12 {
     }
 }
 int main() {
-    cin.tie(0)->sync_with_stdio(0);
-    memset(dp, 0, sizeof(dp));
-    cin >> n >> k >> d;
-    sl = n-k;
-	// memset(b, 0, sizeof(b));
-    for (int i = 0; i < k; i++) {
-        int x;
-        cin >> x;
-        b[x] = 1;
-		cout << x << endl;
+    for (int i = -20; i < 0; i++) {
+        cout << i << " " << i % 5 << endl;
     }
-    for (int i = 1; i <= n; i++) {
-        if (b[i] == 0) {
-			a.push_back(i);
-			// cout << i << endl;
-		}
+    for (int i = 10; i < 20; i++) {
+        int b = (-4 * 100 + i) % 5;
+        int c = (-19 * 100 + i) % 5;
+        cout << i << " " << b << " " << c << endl;
     }
-	cout << sl << " " << int(a.size()) << endl;
-    if (sub12::check() == 1) {sub12::solve(); return 0;}
+    // cin.tie(0)->sync_with_stdio(0);
+    // memset(dp, 0, sizeof(dp));
+    // cin >> n >> k >> d;
+    // sl = n-k;
+	// // memset(b, 0, sizeof(b));
+    // for (int i = 0; i < k; i++) {
+    //     int x;
+    //     cin >> x;
+    //     b[x] = 1;
+	// 	cout << x << endl;
+    // }
+    // for (int i = 1; i <= n; i++) {
+    //     if (b[i] == 0) {
+	// 		a.push_back(i);
+	// 		// cout << i << endl;
+	// 	}
+    // }
+	// cout << sl << " " << int(a.size()) << endl;
+    // if (sub12::check() == 1) {sub12::solve(); return 0;}
     return 0;
 }
 

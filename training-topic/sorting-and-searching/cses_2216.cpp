@@ -1,38 +1,25 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-
 using namespace std;
 
-int longestIncreasingSubsequence(const vector<int>& arr) {
-    vector<int> lis;
-    for (int x : arr) {
-        auto it = upper_bound(lis.begin(), lis.end(), x);
-        if (it == lis.end()) {
-            lis.push_back(x);
-        } else {
-            *it = x;
-        }
-    }
-    return lis.size();
-}
+int n;
+int idx[200010];
 
 int main() {
-    int n;
     cin >> n;
-    
-    vector<int> arr(n);
     for (int i = 0; i < n; ++i) {
-        cin >> arr[i];
+        int x;
+        cin >> x;
+        idx[x] = i + 1;
     }
-    
-    // Reverse the array
-    reverse(arr.begin(), arr.end());
-    
-    // Find the length of LIS in the reversed array
-    int rounds = longestIncreasingSubsequence(arr);
-    
-    cout << rounds << endl;
+    int ans = 1, pos = 1;
+    for (int i = 1; i <= n; ++i) {
+        if (pos > idx[i]) {
+            ++ans;
+        }
+        pos = idx[i];
+    }
+    cout << ans << endl;
     return 0;
 }
 
