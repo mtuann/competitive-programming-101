@@ -1,110 +1,89 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 
 using namespace std;
 
-vector<int> find_cycles(int n, const vector<int>& teleporters, vector<int>& in_cycle) {
-    vector<int> visited(n, -1);
-    vector<int> cycle_map(n, -1);
+vector<int> teleporter, cycle_length, distance_to_cycle, visited, cycle_id;
+
+// DFS function to identify cycles and compute distances
+void find_cycle(int planet) {
     vector<int> stack;
-    int cycle_id = 0;
-
-    auto dfs = [&](int start) {
-        stack.clear();
-        int node = start;
-        while (visited[node] == -1) {
-            visited[node] = stack.size();
-            stack.push_back(node);
-            node = teleporters[node];
-        }
-        if (visited[node] != -2 && visited[node] < stack.size()) {
-            for (int i = visited[node]; i < stack.size(); ++i) {
-                cycle_map[stack[i]] = cycle_id;
-                in_cycle[stack[i]] = true;
-            }
-            cycle_id++;
-        }
-        for (int i = 0; i < stack.size(); ++i) {
-            visited[stack[i]] = -2;
-        }
-    };
-
-    for (int i = 0; i < n; ++i) {
-        if (visited[i] == -1) {
-            dfs(i);
+    while (!visited[planet]) {
+        visited[planet] = 1;
+        stack.push_back(planet);
+        planet = teleporter[planet];
+    }
+    
+    if (visited[planet] == 1) {
+        int cycle_start = planet;
+        int cycle_len = 0;
+        // Count the length of the cycle
+        do {
+            cycle_length[planet] = cycle_len++;
+            cycle_id[planet] = cycle_start;
+            planet = teleporter[planet];
+        } while (planet != cycle_start);
+        
+        // Assign cycle length to all planets in the cycle
+        for (int i = 0; i < cycle_len; ++i) {
+            planet = stack.back();
+            stack.pop_back();
+            visited[planet] = 2;
+            distance_to_cycle[planet] = 0;
+            cycle_length[planet] = cycle_len;
         }
     }
 
-    return cycle_map;
-}
-
-vector<int> bfs_distances(int n, const vector<int>& teleporters, const vector<int>& cycle_map, const vector<int>& in_cycle) {
-    vector<int> dist(n, -1);
-    queue<int> q;
-
-    for (int i = 0; i < n; ++i) {
-        if (in_cycle[i]) {
-            dist[i] = 0;
-            q.push(i);
-        }
-    }
-
-    while (!q.empty()) {
-        int node = q.front();
-        q.pop();
-        int next_node = teleporters[node];
-        if (dist[next_node] == -1) {
-            dist[next_node] = dist[node] + 1;
-            q.push(next_node);
-        }
-    }
-
-    return dist;
-}
-
-void solve(int n, int q, const vector<int>& teleporters, const vector<pair<int, int>>& queries) {
-    vector<int> in_cycle(n, false);
-    vector<int> cycle_map = find_cycles(n, teleporters, in_cycle);
-    vector<int> dist = bfs_distances(n, teleporters, cycle_map, in_cycle);
-
-    for (const auto& query : queries) {
-        int a = query.first - 1;
-        int b = query.second - 1;
-
-        if (in_cycle[a] && in_cycle[b]) {
-            if (cycle_map[a] == cycle_map[b]) {
-                int steps = (dist[a] - dist[b]) % n;
-                if (steps < 0) steps += n;
-                cout << steps << "\n";
-            } else {
-                cout << -1 << "\n";
-            }
-        } else if (!in_cycle[a] && dist[b] != -1) {
-            int result = dist[a] != -1 ? dist[a] + dist[b] : -1;
-            cout << result << "\n";
-        } else {
-            cout << -1 << "\n";
-        }
+    // For non-cycle planets, calculate distance to the cycle
+    while (!stack.empty()) {
+        int current = stack.back();
+        stack.pop_back();
+        visited[current] = 2;
+        distance_to_cycle[current] = distance_to_cycle[teleporter[current]] + 1;
+        cycle_id[current] = cycle_id[teleporter[current]];
     }
 }
 
 int main() {
     int n, q;
     cin >> n >> q;
-
-    vector<int> teleporters(n);
-    for (int i = 0; i < n; ++i) {
-        cin >> teleporters[i];
-        teleporters[i]--; // make 0-indexed
+    
+    teleporter.resize(n + 1);
+    cycle_length.resize(n + 1);
+    distance_to_cycle.resize(n + 1);
+    visited.resize(n + 1, 0);
+    cycle_id.resize(n + 1);
+    
+    // Input teleporters
+    for (int i = 1; i <= n; ++i) {
+        cin >> teleporter[i];
     }
 
-    vector<pair<int, int>> queries(q);
+    // Preprocess cycles and distances
+    for (int i = 1; i <= n; ++i) {
+        if (!visited[i]) {
+            find_cycle(i);
+        }
+    }
+
+    // Process queries
     for (int i = 0; i < q; ++i) {
-        cin >> queries[i].first >> queries[i].second;
+        int a, b;
+        cin >> a >> b;
+
+        if (cycle_id[a] == cycle_id[b]) {
+            if (distance_to_cycle[a] <= distance_to_cycle[b]) {
+                cout << distance_to_cycle[b] - distance_to_cycle[a] << endl;
+            } else {
+                // Inside the same cycle
+                int steps_in_cycle = (cycle_length[a] - distance_to_cycle[a]) + distance_to_cycle[b];
+                cout << steps_in_cycle << endl;
+            }
+        } else {
+            // a cannot reach b
+            cout << -1 << endl;
+        }
     }
-
-    solve(n, q, teleporters, queries);
-
+    
     return 0;
 }

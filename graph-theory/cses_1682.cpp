@@ -1,86 +1,85 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <algorithm>
 
 using namespace std;
 
-const int MAXN = 100000;
-vector<int> graph[MAXN], reverseGraph[MAXN];
-vector<int> scc[MAXN];
-bool visited[MAXN];
-int component[MAXN];
-stack<int> nodesStack;
-int n, m;
+vector<vector<int>> graph;
+vector<int> index, lowlink, component;
+vector<bool> inStack;
+stack<int> nodeStack;
+vector<vector<int>> scc;
+vector<int> dfsNode;
+int indexCounter = 0, sccCount = 0;
 
-void dfs1(int u) {
-    visited[u] = true;
+void tarjan(int u) {
+    index[u] = lowlink[u] = indexCounter++;
+    nodeStack.push(u);
+    inStack[u] = true;
+
     for (int v : graph[u]) {
-        if (!visited[v]) {
-            dfs1(v);
+        if (index[v] == -1) {
+            tarjan(v);
+            lowlink[u] = min(lowlink[u], lowlink[v]);
+        } else if (inStack[v]) {
+            lowlink[u] = min(lowlink[u], index[v]);
         }
     }
-    nodesStack.push(u);
-}
 
-void dfs2(int u, int comp) {
-    visited[u] = true;
-    component[u] = comp;
-    scc[comp].push_back(u);
-    for (int v : reverseGraph[u]) {
-        if (!visited[v]) {
-            dfs2(v, comp);
-        }
+    if (lowlink[u] == index[u]) {
+        int v;
+        scc.push_back(vector<int>());
+        do {
+            v = nodeStack.top();
+            nodeStack.pop();
+            inStack[v] = false;
+            component[v] = sccCount;
+            scc[sccCount].push_back(v);
+        } while (v != u);
+        sccCount++;
     }
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
+    int n, m;
     cin >> n >> m;
 
-    for (int i = 0; i < m; ++i) {
+    graph.resize(n + 1);
+    index.assign(n + 1, -1);
+    lowlink.assign(n + 1, 0);
+    component.assign(n + 1, -1);
+    inStack.assign(n + 1, false);
+
+    for (int i = 0; i < m; i++) {
         int a, b;
         cin >> a >> b;
-        --a; --b; // 0-based indexing
         graph[a].push_back(b);
-        reverseGraph[b].push_back(a);
     }
 
-    // Step 1: First DFS to order vertices by finish times
-    fill(visited, visited + n, false);
-    for (int i = 0; i < n; ++i) {
-        if (!visited[i]) {
-            dfs1(i);
+    // Run Tarjan's algorithm on all nodes
+    for (int i = 1; i <= n; i++) {
+        if (index[i] == -1) {
+            tarjan(i);
+            dfsNode.push_back(i);
         }
     }
 
-    // Step 2: Second DFS in reverse order of finishing times
-    fill(visited, visited + n, false);
-    int compCount = 0;
-    while (!nodesStack.empty()) {
-        int u = nodesStack.top();
-        nodesStack.pop();
-        if (!visited[u]) {
-            dfs2(u, compCount++);
-        }
-    }
-
-    // Check if the graph is strongly connected
-    if (compCount == 1) {
+    // Check if all cities belong to the same SCC
+    if (sccCount == 1) {
         cout << "YES\n";
     } else {
-        cout << "NO\n";
-        // Find two nodes in different SCCs
-        int u = 0, v = 0;
-        for (int i = 0; i < n; ++i) {
-            if (scc[0].size() > 0 && scc[component[i]].size() > 0 && component[i] != component[0]) {
-                u = scc[0][0] + 1; // Convert back to 1-based indexing
-                v = i + 1; // Convert back to 1-based indexing
-                break;
+        // Find two cities that belong to different SCCs
+        for (int i = 1; i <= n; i++) {
+            for (int v : graph[i]) {
+                if (component[i] != component[v]) {
+                    cout << "NO\n" << v << " " << i << "\n";
+                    return 0;
+                }
             }
         }
-        cout << u << " " << v << "\n";
+        cout << "NO\n" << dfsNode[0] << " " << dfsNode[1] << "\n";
+
     }
 
     return 0;
