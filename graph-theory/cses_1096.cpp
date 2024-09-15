@@ -75,3 +75,5 @@ int main() {
     cout << result << endl;
     return 0;
 }
+
+// g++ -std=c++11 -O2 -Wall cses_1096.cpp -o a && ./a < a.in
