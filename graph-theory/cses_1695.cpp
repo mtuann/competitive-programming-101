@@ -53,8 +53,10 @@ int edmonds_karp(int source, int sink) {
 }
 
 void dfs(int u, vector<bool>& visited) {
+    cout << "dfs: " << u << endl;
     visited[u] = true;
     for (int v : adj[u]) {
+        cout << "v: " << v << " " << " cap " << capacity[u][v] << " " << capacity[v][u] << endl;
         if (!visited[v] && capacity[u][v] > 0) {
             dfs(v, visited);
         }
@@ -82,11 +84,13 @@ int main() {
     vector<bool> visited(n + 1, false);
     dfs(source, visited);
     
+    
     vector<pair<int, int>> min_cut_edges;
     for (int u = 1; u <= n; u++) {
         if (visited[u]) {
             for (int v : adj[u]) {
                 if (!visited[v] && capacity[u][v] == 0) {
+                    cout << "min_cut: " << u << " " << v << endl;
                     min_cut_edges.push_back({u, v});
                 }
             }
@@ -100,3 +104,5 @@ int main() {
     
     return 0;
 }
+
+// g++ -std=c++11 -O2 -Wall cses_1695.cpp -o a && ./a < a.in
