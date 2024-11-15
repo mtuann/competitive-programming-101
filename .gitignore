@@ -15,3 +15,5 @@ clean_text.ipynb
 bao-toan-ly-hoa/
 dethi01/
 *.zip
+tmp/
+ebooks/
